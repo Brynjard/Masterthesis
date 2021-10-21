@@ -24,7 +24,7 @@ def move_labels(source, destination):
                 if match_path.endswith("DS_Store"):
                     continue
                 source_filepath = source + "/" + match_path + "/" + "Labels-v2.json"
-                destination_filepath  = destination + "/" + match_path + "/" + "Labels-v21.json"
+                destination_filepath  = destination + "/" + match_path + "/" + "Labels-v2.json"
                 copyfile(source_filepath, destination_filepath)
 
 
