@@ -2,7 +2,8 @@ import json
 import os
 import sys
 """
-Changes labels to match requirements of experiment 2. Takes one argument @source: 
+Calculates the average time between events. This is used for action grounding for next and
+previous models in experiment 2. Takes one argument @source, which is the
 root folder of features/labels. Parent-folder of leagues. 
 """
 
@@ -60,11 +61,12 @@ if __name__ == '__main__':
     args = sys.argv
     if len(args) != 2:
         print(f" 1 command line argument expected, {len(args) - 1} found")
+        print(f"The argument should be the root folder of the labels.")
         exit()
 
     source = args[1]
     average_time = calculate_time_between_events(source)
 
-    print(f"Average time between events: {average_time}")
+    print(f"Average time between events: {round(average_time, 2)} milliseconds.")
 
     
