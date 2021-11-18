@@ -312,7 +312,7 @@ def testSpotting(dataloader, model, model_name, overwrite=True, NMS_window=30, N
 
                             prediction_data = dict()
                             prediction_data["gameTime"] = str(half+1) + " - " + str(minutes) + ":" + str(seconds)
-                            if dataloader.dataset.version == 2:
+                            if dataloader.dataset.version >= 2:
                                 prediction_data["label"] = INVERSE_EVENT_DICTIONARY_V2[l]
                             else:
                                 prediction_data["label"] = INVERSE_EVENT_DICTIONARY_V1[l]
