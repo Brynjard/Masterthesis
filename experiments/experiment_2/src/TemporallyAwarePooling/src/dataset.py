@@ -57,6 +57,14 @@ class SoccerNetClips(Dataset):
             self.dict_event = EVENT_DICTIONARY_V2
             self.num_classes = 17
             self.labels="Labels-v2.json"
+        elif version == 3:
+            self.dict_event = EVENT_DICTIONARY_V2
+            self.num_classes = 17
+            self.labels="Labels-v2-next.json"
+        elif version == 4:
+            self.dict_event = EVENT_DICTIONARY_V2
+            self.num_classes = 17
+            self.labels="Labels-v2-previous.json"
 
         logging.info("Checking/Download features and labels locally")
         downloader = SoccerNetDownloader(path)
@@ -104,7 +112,7 @@ class SoccerNetClips(Dataset):
                     elif "subs" in event: label = 1
                     elif "soccer" in event: label = 2
                     else: continue
-                elif version == 2:
+                elif version > 1:
                     if event not in self.dict_event:
                         continue
                     label = self.dict_event[event]
@@ -166,6 +174,14 @@ class SoccerNetClipsTesting(Dataset):
             self.dict_event = EVENT_DICTIONARY_V2
             self.num_classes = 17
             self.labels="Labels-v2.json"
+        elif version == 3:
+            self.dict_event = EVENT_DICTIONARY_V2
+            self.num_classes = 17
+            self.labels="Labels-v2-next.json"
+        elif version == 4:
+            self.dict_event = EVENT_DICTIONARY_V2
+            self.num_classes = 17
+            self.labels="Labels-v2-previous.json"
 
         logging.info("Checking/Download features and labels locally")
         downloader = SoccerNetDownloader(path)
@@ -216,7 +232,7 @@ class SoccerNetClipsTesting(Dataset):
                     elif "subs" in event: label = 1
                     elif "soccer" in event: label = 2
                     else: continue
-                elif self.version == 2:
+                elif self.version > 1:
                     if event not in self.dict_event:
                         continue
                     label = self.dict_event[event]
