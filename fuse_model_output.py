@@ -86,15 +86,33 @@ def write_predictions(dest_folder, prediction_dict):
         absolute_path = dest_folder + "/" + filename
         with open(absolute_path, "x") as write_file:
             json.dump({"UrlLocal": prediction_dict[filename]["url"], "predictions": prediction_dict[filename]["predictions"]}, write_file)
+"""
+This model combines the output of three models(prev, curr, next) in the dict-representation established above, and outputs a single truth for predictions. 
+"""
+def ex2_data_fusion(prev_model, curr_model, next_model):
+    for game_url in curr_model.keys():
+        current_predictions = curr_model[game_url]["predictions"]
+        prev_predictions = prev_model[game_url]["predictions"]
+        next_predictions = next_model[game_url]["predictions"]
+
+
 
 if __name__ == '__main__':
     args = sys.argv
     if len(args) < 3:
         print(f" atleast 2 command line arguments expected, {len(args) - 1} found")
         exit()
+    #Have to take these arguments: Source_prev source_curr source_next output_folder:
+    source_prev = args[1]
+    source_current = args[2]
+    source_next = args[3]
+    dest = args[4]
+    create_file_structure(source_prev, dest) #all models (prev, current, next) has same filestructure, so we might aswell use the prev-folder.
+    prev_model = create_prediction_dict(source_prev)
+    current_model = create_prediction_dict(source_current)
+    next_model = create_prediction_dict(source_next)
+    print("Length of prev: {}".format(len(prev_model["england_epl/2015-2016/2015-08-16 - 18-00 Manchester City 3 - 0 Chelsea/results_spotting.json"]["predictions"])))
+    print("Length of current: {}".format(len(current_model["england_epl/2015-2016/2015-08-16 - 18-00 Manchester City 3 - 0 Chelsea/results_spotting.json"]["predictions"])))
+    print("Length of next: {}".format(len(next_model["england_epl/2015-2016/2015-08-16 - 18-00 Manchester City 3 - 0 Chelsea/results_spotting.json"]["predictions"])))
+    #write_predictions(dest, dict1)
 
-    source = args[1]
-    dest = args[2]
-    create_file_structure(source, dest)
-    dict1 = create_prediction_dict(source)
-    write_predictions(dest, dict1)
