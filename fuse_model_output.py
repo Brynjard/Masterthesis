@@ -90,6 +90,7 @@ def write_predictions(dest_folder, prediction_dict):
 This model combines the output of three models(prev, curr, next) in the dict-representation established above, and outputs a single truth for predictions. 
 """
 def ex2_data_fusion(prev_model, curr_model, next_model, confidence_threshold, time_adjustment):
+    predictions_dictionary = {}
     for game_url in curr_model.keys():
         url = curr_model[game_url]["url"]
         current_predictions = curr_model[game_url]["predictions"]
@@ -108,14 +109,36 @@ def ex2_data_fusion(prev_model, curr_model, next_model, confidence_threshold, ti
         next_predictions = [add_or_subtract_time(p, time_adjustment) for p in next_predictions]
         print("First next_pred after adjusting time: {}".format(next_predictions[1]))
         print("First prev_pred after adjusting time: {}".format(prev_predictions[1]))
-
         
-
+        # Merge the predictions into 1 list
+        new_prev_predictions = [p for p in prev_predictions if not predicted_event_exists(current_predictions=current_predictions, prediction_object_to_check=p, time_frame=10000)]
+        all_predictions = current_predictions + new_prev_predictions
+        new_next_predictions = [p for p in next_predictions if not predicted_event_exists(current_predictions=all_predictions, prediction_object_to_check=p, time_frame=10000)]
+        all_predictions = all_predictions + new_next_predictions
+        
+        # Add game to the prediction dict    
+        predictions_dictionary[game_url] = {}
+        predictions_dictionary[game_url]["url"] = url
+        predictions_dictionary[game_url]["predictions"] = all_predictions
     
-
-
-
-
+    return predictions_dictionary
+    
+    
+        
+"""
+Check if the prediction already exist int he current_predition list within a set time frame
+"""
+def predicted_event_exists(current_predictions, prediction_object_to_check, time_frame):
+    min_interval = int(prediction_object_to_check["postition"]) - int(time_frame / 2)
+    max_interval = int(prediction_object_to_check["postition"]) + int(time_frame / 2)
+    event_type = prediction_object_to_check["label"]
+    for prediction_object in current_predictions:
+        label = prediction_object["label"]
+        position = int(prediction_object["postition"])
+        if label == event_type and position >= min_interval and position <= max_interval:
+            return True
+    
+    return False
 
 
 """
@@ -181,8 +204,6 @@ if __name__ == '__main__':
     current_model = create_prediction_dict(source_current)
     next_model = create_prediction_dict(source_next)
 
-    ex2_data_fusion(prev_model, current_model, next_model, confidence_threshold, time_adjustment)
-    
-
-    #write_predictions(dest, dict1)
+    prediction_dict = ex2_data_fusion(prev_model, current_model, next_model, confidence_threshold, time_adjustment)
+    write_predictions(dest_folder=dest, prediction_dict=prediction_dict)
 
