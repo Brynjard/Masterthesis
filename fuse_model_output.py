@@ -89,13 +89,79 @@ def write_predictions(dest_folder, prediction_dict):
 """
 This model combines the output of three models(prev, curr, next) in the dict-representation established above, and outputs a single truth for predictions. 
 """
-def ex2_data_fusion(prev_model, curr_model, next_model):
+def ex2_data_fusion(prev_model, curr_model, next_model, confidence_threshold, time_adjustment):
     for game_url in curr_model.keys():
+        url = curr_model[game_url]["url"]
         current_predictions = curr_model[game_url]["predictions"]
         prev_predictions = prev_model[game_url]["predictions"]
         next_predictions = next_model[game_url]["predictions"]
 
+        #filtering on confidence: 
+        current_predictions = [p for p in current_predictions if float(p["confidence"]) >= confidence_threshold]
+        prev_predictions = [p for p in prev_predictions if float(p["confidence"]) >= confidence_threshold]
+        next_predictions = [p for p in next_predictions if float(p["confidence"]) >= confidence_threshold]
+        print("First next_pred before adjusting time: {}".format(next_predictions[1]))
+        print("First prev_pred before adjusting time: {}".format(prev_predictions[1]))
 
+        #Adjusting time for prev and next models' predictions:
+        prev_predictions = [add_or_subtract_time(p, 0 - time_adjustment) for p in prev_predictions]
+        next_predictions = [add_or_subtract_time(p, time_adjustment) for p in next_predictions]
+        print("First next_pred after adjusting time: {}".format(next_predictions[1]))
+        print("First prev_pred after adjusting time: {}".format(prev_predictions[1]))
+
+        
+
+    
+
+
+
+
+
+
+"""
+Takes a prediction json-object as input, and returns the game-half and time of the prediction as numbers:
+half, minute, second
+"""
+def convert_timestring_to_nums(pred_object):
+    time_string = pred_object["gameTime"]
+    half = int(time_string[0])
+    time_split = time_string[4:].split(":")
+    minute = int(time_split[0])
+    second = int(time_split[1])
+    return half, minute, second
+
+def convert_nums_to_timestring(half, minute, second):
+    time_string = ""
+    time_string += str(half) + " - " #adding half..
+    time_string += str(minute) + ":" #adding minute
+    time_string += str(second) #adding seconds
+    return time_string
+
+#def extract_preds_within_time_and_label(preds, current_time, timeframe, label):
+
+def add_or_subtract_time(pred_object, time_adjustment):
+    half, minute, second = convert_timestring_to_nums(pred_object)
+ 
+    if time_adjustment < 0:
+        if minute == 0 and second == 0 and pred_object["label"] != "Kick-off":
+            return pred_object #ignoring cases where our pred_model has predicted something at 0:0 thats not kick-off.
+        if second + time_adjustment < 0: #subtracting time_adjustment from second (we know its negative)
+            minute -= 1
+            second = 60 + (time_adjustment + second)
+        else:
+            second -= time_adjustment
+    else:
+        if second + time_adjustment > 60:
+            minute += 1
+            second = time_adjustment - (60 - second)
+        else:
+            second += time_adjustment
+            
+    time_string = convert_nums_to_timestring(half, minute, second)
+    pred_object["gameTime"] = time_string
+    new_position = int(pred_object["position"]) + time_adjustment * 1000
+    pred_object["position"] = str(new_position)
+    return pred_object
 
 if __name__ == '__main__':
     args = sys.argv
@@ -107,12 +173,16 @@ if __name__ == '__main__':
     source_current = args[2]
     source_next = args[3]
     dest = args[4]
+    confidence_threshold = float(args[5])
+    time_adjustment = int(args[6])
+
     create_file_structure(source_prev, dest) #all models (prev, current, next) has same filestructure, so we might aswell use the prev-folder.
     prev_model = create_prediction_dict(source_prev)
     current_model = create_prediction_dict(source_current)
     next_model = create_prediction_dict(source_next)
-    print("Length of prev: {}".format(len(prev_model["england_epl/2015-2016/2015-08-16 - 18-00 Manchester City 3 - 0 Chelsea/results_spotting.json"]["predictions"])))
-    print("Length of current: {}".format(len(current_model["england_epl/2015-2016/2015-08-16 - 18-00 Manchester City 3 - 0 Chelsea/results_spotting.json"]["predictions"])))
-    print("Length of next: {}".format(len(next_model["england_epl/2015-2016/2015-08-16 - 18-00 Manchester City 3 - 0 Chelsea/results_spotting.json"]["predictions"])))
+
+    ex2_data_fusion(prev_model, current_model, next_model, confidence_threshold, time_adjustment)
+    
+
     #write_predictions(dest, dict1)
 
