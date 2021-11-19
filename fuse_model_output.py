@@ -109,7 +109,9 @@ def ex2_data_fusion(prev_model, curr_model, next_model, confidence_threshold, ti
         print("First next_pred after adjusting time: {}".format(next_predictions[1]))
         print("First prev_pred after adjusting time: {}".format(prev_predictions[1]))
 
-        break
+        
+
+    
 
 
 
