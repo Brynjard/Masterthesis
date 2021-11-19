@@ -51,8 +51,9 @@ def calculate_time_between_events(source):
                 source_filepath = source + "/" + match_path + "/" + "Labels-v2.json"
                 if source_filepath.endswith("DS_Store"):
                     continue
-                avg_time_per_match += get_avg_time_between_events(source_filepath)
-                number_of_matches += 1
+                if os.path.isfile(source_filepath):
+                    avg_time_per_match += get_avg_time_between_events(source_filepath)
+                    number_of_matches += 1
 
     return avg_time_per_match/number_of_matches
 
