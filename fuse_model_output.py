@@ -95,8 +95,6 @@ def ex2_data_fusion(prev_model, curr_model, next_model):
         prev_predictions = prev_model[game_url]["predictions"]
         next_predictions = next_model[game_url]["predictions"]
 
-        
-
 
 
 if __name__ == '__main__':
@@ -117,3 +115,4 @@ if __name__ == '__main__':
     print("Length of current: {}".format(len(current_model["england_epl/2015-2016/2015-08-16 - 18-00 Manchester City 3 - 0 Chelsea/results_spotting.json"]["predictions"])))
     print("Length of next: {}".format(len(next_model["england_epl/2015-2016/2015-08-16 - 18-00 Manchester City 3 - 0 Chelsea/results_spotting.json"]["predictions"])))
     #write_predictions(dest, dict1)
+

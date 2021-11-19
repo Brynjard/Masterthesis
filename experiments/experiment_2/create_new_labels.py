@@ -9,9 +9,11 @@ def create_labels_next(filepath):
     split = filepath.split("/")
     
     # filepath = os.path.abspath(filepath)
-    
-    file = open(filepath)
     write_filepath = filepath.replace(split[-1], "Labels-v2-next.json")
+    if os.path.isfile(write_filepath):
+        return
+    file = open(filepath)
+    
     write_file = open(write_filepath, "x")
     labels = json.load(file)
     
@@ -33,9 +35,11 @@ def create_labels_previous(filepath):
     split = filepath.split("/")
 
     # filepath = os.path.abspath(filepath)
-
-    file = open(filepath)
     write_filepath = filepath.replace(split[-1], "Labels-v2-previous.json")
+    if os.path.isfile(write_filepath):
+        return
+    file = open(filepath)
+    
     write_file = open(write_filepath, "x")
     labels = json.load(file)
     for i in range(len(labels["annotations"]) - 1, -1, -1):
@@ -79,8 +83,9 @@ def create_new_labels(source):
                 source_filepath = source + "/" + match_path + "/" + "Labels-v2.json"
                 if source_filepath.endswith("DS_Store"):
                     continue
-                create_labels_previous(source_filepath)
-                create_labels_next(source_filepath)
+                if os.path.isfile(source_filepath):
+                    create_labels_previous(source_filepath)
+                    create_labels_next(source_filepath)
 
 
 if __name__ == '__main__':
