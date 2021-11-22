@@ -6,11 +6,11 @@ import sys
 import json
 import time
 import numpy as np
-
+from datetime import datetime
 from SoccerNet.Evaluation.ActionSpotting import evaluate
 """
 Evaluates the performance of the predictions.
-The scipt takes two arguments, the path to soccernet and the output folder with the predictions.
+The scipt takes three arguments, the path to soccernet, the path to the output folder with the predictions and model name.
 """
 
 def zipResults(zip_path, target_dir, filename="results_spotting.json"):            
@@ -24,20 +24,21 @@ def zipResults(zip_path, target_dir, filename="results_spotting.json"):
 
 
 if __name__ == '__main__':
-    
+    log_file_name = datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + ".log"
+    logging.basicConfig(filename=log_file_name, level=logging.DEBUG)
     args = sys.argv
 
-    if len(args) < 3:
-        print(f"2 command line arguments expected, {len(args) - 1} found")
+    if len(args) < 4:
+        print(f"3 command line arguments expected, {len(args) - 1} found")
         exit()
 
-    # zip folder
-    # output_results = args[1]
-    model_name = "ex2_NetVLAD++_fusion"
+    model_name = args[3]
     soccer_net_path =  args[1]
     split = "test"
     output_folder = args[2]
     output_results = f"results_spotting_{split}.zip"
+
+    model_name = args[3]
 
     zipResults(zip_path = output_results,
             target_dir = os.path.join("models", model_name, output_folder),
@@ -57,6 +58,7 @@ if __name__ == '__main__':
     a_mAP_unshown = results["a_mAP_unshown"]
     a_mAP_per_class_unshown = results["a_mAP_per_class_unshown"]
 
+    logging.info("Model name: " + model_name)
     logging.info("Best Performance at end of training ")
     logging.info("a_mAP visibility all: " +  str(a_mAP))
     logging.info("a_mAP visibility all per class: " +  str( a_mAP_per_class))
@@ -65,6 +67,7 @@ if __name__ == '__main__':
     logging.info("a_mAP visibility unshown: " +  str( a_mAP_unshown))
     logging.info("a_mAP visibility unshown per class: " +  str( a_mAP_per_class_unshown))
 
+    print("Model name: " + model_name)
     print("Best Performance at end of training ")
     print("a_mAP visibility all: " +  str(a_mAP))
     print("a_mAP visibility visible: " +  str( a_mAP_visible))
