@@ -1,5 +1,8 @@
 import sys, os, json
-
+"""
+for a given filename(that corresponds to a label..)
+This function extracts the relevant information for creating another label-file.
+"""
 def extract_events_from_file(filepath):
     json_file = open(filepath)
     elems = json.load(json_file)
@@ -10,7 +13,9 @@ def extract_events_from_file(filepath):
     gameHomeTeam = elems["gameHomeTeam"]
     gameScore = elems["gameScore"]
     return url_local, annotations, gameAwayTeam, gameDate, gameHomeTeam, gameScore
-
+"""
+Finds all files in src-folder, and appends their name to file-list:
+"""
 def find_files_in_folders(file_list, src):
     if os.path.isdir(src):
         sub_entries = os.listdir(src)
@@ -20,7 +25,9 @@ def find_files_in_folders(file_list, src):
     elif os.path.isfile(src):
         file_list.append(src)
         return
-
+"""
+Creates a dictionary which represents the labels for soccernet. 
+"""
 def create_label_dict(src, label_name):
     filenames = []
     find_files_in_folders(filenames, src)
@@ -36,14 +43,16 @@ def create_label_dict(src, label_name):
             predictions_dictionary[filename]["gameHomeTeam"] = gameHomeTeam
             predictions_dictionary[filename]["gameScore"] = gameScore
     return predictions_dictionary
-
+"""
+Writes labels to files with specified filename(new_file_ending) from a dictionary representing labels.
+"""
 def write_annotations(prediction_dict, new_file_ending):
     for filename in prediction_dict.keys():
         dirs = filename.split("/")
         new_filename = "/".join(dirs[:-1]) + "/" + new_file_ending
         with open(new_filename, "x") as write_file:
             json.dump({"UrlLocal": prediction_dict[filename]["url"], "urlYoutube": "", "annotations": prediction_dict[filename]["annotations"], "gameAwayTeam": prediction_dict[filename]["gameAwayTeam"], "gameDate": prediction_dict[filename]["gameDate"], "gameHomeTeam": prediction_dict[filename]["gameHomeTeam"], "gameScore": prediction_dict[filename]["gameScore"]}, write_file)
-
+#Filters events for next-model based on what we know about events in soccer (what precedes what, etc)
 def filter_events_for_next(annotations_dict):
     for game in annotations_dict.keys():
         annotations = annotations_dict[game]["annotations"]
@@ -54,7 +63,7 @@ def filter_events_for_next(annotations_dict):
             if annotation["label"] not in invalid_labels:
                 valid_labels.append(annotation)
         annotations_dict[game]["annotations"] = valid_labels
-
+#Filters events for prev-model based on what we know about events in soccer (what precedes what, etc)
 def filter_events_for_prev(annotations_dict):
     for game in annotations_dict.keys():
         annotations = annotations_dict[game]["annotations"]
@@ -69,12 +78,12 @@ def filter_events_for_prev(annotations_dict):
 if __name__ == '__main__':
     args = sys.argv
     label_src =  args[1]
-
+    #Use labels from ex2. to create label-dictionaries:
     prev_dict = create_label_dict(label_src, "Labels-v2-previous.json")
     next_dict = create_label_dict(label_src, "Labels-v2-next.json")
-
+    #Filter labels in accordance with ex3:
     filter_events_for_next(next_dict)
     filter_events_for_prev(prev_dict)
-
+    #Create new labels for ex3:
     write_annotations(next_dict, "Labels-v2-next-ex3.json")
     write_annotations(prev_dict, "Labels-v2-previous-ex3.json")
