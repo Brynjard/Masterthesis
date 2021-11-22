@@ -21,7 +21,7 @@ def create_prediction_dict(src):
     find_files_in_folders(filenames, src)
     predictions_dictionary = {}
     for filename in filenames:
-        url_local, preds = extract_events_from_file(filenames[1])
+        url_local, preds = extract_events_from_file(filename)
         relative_path = strip_filename_to_relative(filename)
         predictions_dictionary[relative_path] = {}
         predictions_dictionary[relative_path]["url"] = url_local
@@ -93,6 +93,7 @@ def ex2_data_fusion(prev_model, curr_model, next_model, confidence_threshold, ti
     predictions_dictionary = {}
     for game_url in curr_model.keys():
         url = curr_model[game_url]["url"]
+        # print(url)
         current_predictions = curr_model[game_url]["predictions"]
         prev_predictions = prev_model[game_url]["predictions"]
         next_predictions = next_model[game_url]["predictions"]
@@ -101,14 +102,11 @@ def ex2_data_fusion(prev_model, curr_model, next_model, confidence_threshold, ti
         current_predictions = [p for p in current_predictions if float(p["confidence"]) >= confidence_threshold]
         prev_predictions = [p for p in prev_predictions if float(p["confidence"]) >= confidence_threshold]
         next_predictions = [p for p in next_predictions if float(p["confidence"]) >= confidence_threshold]
-        print("First next_pred before adjusting time: {}".format(next_predictions[1]))
-        print("First prev_pred before adjusting time: {}".format(prev_predictions[1]))
+    
 
         #Adjusting time for prev and next models' predictions:
         prev_predictions = [add_or_subtract_time(p, 0 - time_adjustment) for p in prev_predictions]
         next_predictions = [add_or_subtract_time(p, time_adjustment) for p in next_predictions]
-        print("First next_pred after adjusting time: {}".format(next_predictions[1]))
-        print("First prev_pred after adjusting time: {}".format(prev_predictions[1]))
         
         # Merge the predictions into 1 list
         new_prev_predictions = [p for p in prev_predictions if not predicted_event_exists(current_predictions=current_predictions, prediction_object_to_check=p, time_frame=10000)]
@@ -129,12 +127,12 @@ def ex2_data_fusion(prev_model, curr_model, next_model, confidence_threshold, ti
 Check if the prediction already exist int he current_predition list within a set time frame
 """
 def predicted_event_exists(current_predictions, prediction_object_to_check, time_frame):
-    min_interval = int(prediction_object_to_check["postition"]) - int(time_frame / 2)
-    max_interval = int(prediction_object_to_check["postition"]) + int(time_frame / 2)
+    min_interval = int(prediction_object_to_check["position"]) - int(time_frame / 2)
+    max_interval = int(prediction_object_to_check["position"]) + int(time_frame / 2)
     event_type = prediction_object_to_check["label"]
     for prediction_object in current_predictions:
         label = prediction_object["label"]
-        position = int(prediction_object["postition"])
+        position = int(prediction_object["position"])
         if label == event_type and position >= min_interval and position <= max_interval:
             return True
     
@@ -188,8 +186,8 @@ def add_or_subtract_time(pred_object, time_adjustment):
 
 if __name__ == '__main__':
     args = sys.argv
-    if len(args) < 3:
-        print(f" atleast 2 command line arguments expected, {len(args) - 1} found")
+    if len(args) < 7:
+        print(f" 6 command line arguments expected, {len(args) - 1} found")
         exit()
     #Have to take these arguments: Source_prev source_curr source_next output_folder:
     source_prev = args[1]
