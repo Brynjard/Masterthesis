@@ -8,6 +8,7 @@ import time
 import numpy as np
 from datetime import datetime
 from SoccerNet.Evaluation.ActionSpotting import evaluate
+from fuse_model_output import create_prediction_dict
 """
 Evaluates the performance of the predictions.
 The scipt takes three arguments, the path to soccernet, the path to the output folder with the predictions and model name.
@@ -21,7 +22,6 @@ def zipResults(zip_path, target_dir, filename="results_spotting.json"):
                     if file == filename:
                         fn = os.path.join(base, file)
                         zipobj.write(fn, fn[rootlen:])
-
 
 if __name__ == '__main__':
     log_file_name = datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + ".log"
@@ -39,6 +39,8 @@ if __name__ == '__main__':
     output_results = f"results_spotting_{split}.zip"
 
     model_name = args[3]
+
+    
 
     zipResults(zip_path = output_results,
             target_dir = os.path.join("models", model_name, output_folder),
@@ -66,6 +68,13 @@ if __name__ == '__main__':
     logging.info("a_mAP visibility visible per class: " +  str( a_mAP_per_class_visible))
     logging.info("a_mAP visibility unshown: " +  str( a_mAP_unshown))
     logging.info("a_mAP visibility unshown per class: " +  str( a_mAP_per_class_unshown))
+
+    model_output_as_dict = create_prediction_dict(output_folder)
+    events_per_game = []
+    for game in model_output_as_dict.keys():
+        events_per_game.append(len(model_output_as_dict[game]["predictions"]))
+    avg = sum(events_per_game) / len(events_per_game)
+    logging.info("Average number of events per game: {}".format(avg))
 
     print("Model name: " + model_name)
     print("Best Performance at end of training ")
