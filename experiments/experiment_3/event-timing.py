@@ -1,11 +1,6 @@
 import json
 import os
 import sys
-"""
-Calculates the average time between events. This is used for action grounding for next and
-previous models in experiment 2. Takes one argument @source, which is the
-root folder of features/labels. Parent-folder of leagues. 
-"""
 
 def get_avg_time_between_events(filepath):
     

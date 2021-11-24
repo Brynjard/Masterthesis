@@ -67,7 +67,7 @@ def filter_events_for_next(annotations_dict):
 def filter_events_for_prev(annotations_dict):
     for game in annotations_dict.keys():
         annotations = annotations_dict[game]["annotations"]
-        invalid_labels = ["Throw-in", "Kick-off", "Indirect free-kick", "Clearance", "Corner", "Substitution", "Direct free-kick", "Yellow card", "Shots on target", "Shots off target", "Red card"]
+        invalid_labels = ["Throw-in", "Yellow->red card", "Kick-off", "Indirect free-kick", "Clearance", "Corner", "Substitution", "Direct free-kick", "Yellow card", "Shots on target", "Shots off target", "Red card", "Penalty"]
         valid_labels = []
 
         for annotation in annotations: 
