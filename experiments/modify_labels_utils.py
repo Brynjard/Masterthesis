@@ -1,5 +1,21 @@
 import sys, os, json
 """
+When we need to filter the labels/change labels this script can help us out. 
+This script offers method to extract labels and convert them to label_dicts on this form: 
+label_dict = {
+    "file_name": {
+            "url" = url_local
+            "annotations" = []
+            "gameAwayTeam" = ...
+            "gameDate" = ...
+            "gameHomeTeam" = ...
+            "gameScore" = ...
+    }
+}
+"""
+
+
+"""
 for a given filename(that corresponds to a label..)
 This function extracts the relevant information for creating another label-file.
 """
