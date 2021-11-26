@@ -164,19 +164,17 @@ def add_or_subtract_time(pred_object, time_adjustment):
     pred_object["position"] = str(new_position)
     return pred_object
 
+
 """
-Check if the prediction already exist int he current_predition list within a set time frame
+This function takes a list of predictions, and filters out all events that have a name included in @invalid_events
 """
-def predicted_event_exists(current_predictions, prediction_object_to_check, time_frame):
-    min_interval = int(prediction_object_to_check["position"]) - int(time_frame / 2)
-    max_interval = int(prediction_object_to_check["position"]) + int(time_frame / 2)
-    event_type = prediction_object_to_check["label"]
-    for prediction_object in current_predictions:
-        label = prediction_object["label"]
-        position = int(prediction_object["position"])
-        if label == event_type and position >= min_interval and position <= max_interval:
-            return True
-    
-    return False
+
+INVALID_EVENTS_PAST_MODEL = ["Throw-in", "Yellow->red card", "Kick-off", "Indirect free-kick", "Clearance", "Corner", "Substitution", "Direct free-kick", "Yellow card", "Shots on target", "Shots off target", "Red card", "Penalty"]
+
+INVALID_EVENTS_FUTURE_MODEL = ["Ball out of play", "Foul", "Substitution", "Offside", "Shots on target", "Shots off target", "Goal"]
+
+def filter_prediction_on_events(preds, invalid_events):
+    filtered = [p for p in preds if p["label"] not in invalid_events]
+    return filtered
 
 

@@ -17,7 +17,9 @@ events_dict_past = {
     "Corner": ["Ball out of play"],
     "Direct free-kick": ["Foul"],
     "Yellow card": ["Foul"],
-    "Red card": ["Foul"]
+    "Red card": ["Foul"],
+    "Penalty": ["Foul"],
+    "Yellow->red card": ["Foul"]
 }
 
 events_dict_future = {
@@ -35,7 +37,9 @@ event_time_past = {
     "Corner": [],
     "Direct free-kick": [],
     "Yellow card": [],
-    "Red card": []
+    "Red card": [],
+    "Penalty": [],
+    "Yellow->red card": []
 }
 
 event_time_future = {
