@@ -6,3 +6,4 @@
 
 - We use NetVLAD++ since the model is a part of the SoccerNetv2 dev-kit and therefore ready-to-use. The different features can be utilized with an command line argument.
 - Original repo link: https://github.com/SilvioGiancola/SoccerNetv2-DevKit/tree/main/Task1-ActionSpotting/TemporallyAwarePooling
+

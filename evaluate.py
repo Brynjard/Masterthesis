@@ -1,5 +1,5 @@
 
-import os
+import os, sys
 import logging
 import zipfile
 import sys
@@ -8,7 +8,7 @@ import time
 import numpy as np
 from datetime import datetime
 from SoccerNet.Evaluation.ActionSpotting import evaluate
-from fuse_model_output import create_prediction_dict
+from experiments.datafusion_utils import create_prediction_dict
 """
 Evaluates the performance of the predictions.
 The scipt takes three arguments, the path to soccernet, the path to the output folder with the predictions and model name.
