@@ -3,6 +3,7 @@ import os
 import sys
 import statistics
 from numpy.lib.function_base import average, median
+
 """
 Calculates the time between different events. This is used for action grounding for next and
 previous models in different experiments. Takes one argument @source, which is the
@@ -124,6 +125,8 @@ def calculate_time_between_events(source):
                     continue
                 if os.path.isfile(source_filepath):
                     get_avg_time_between_events(source_filepath)
+    
+    return event_time_past, event_time_future
 
 
 if __name__ == '__main__':
@@ -138,7 +141,7 @@ if __name__ == '__main__':
     calculate_time_between_events(source)
 
     # Calculate average time
-
+    print("Test")
     print(f"\nTime from next event to 'previous' event:")
     for key, value in event_time_past.items():
         if len(value) != 0:
@@ -148,6 +151,10 @@ if __name__ == '__main__':
             median_time = median(value)
             print(f"{key}")
             print(f"avg {round(avg_time, 1)} --- avg(sec) {round(avg_time / 1000, 1)} --- median {median_time} --- median (sec) {round(median_time / 1000, 1)} --- min {min_time} --- max {max_time} --- n {len(value)}")
+            sorted_list = sorted(value)
+            print(sorted_list[0:10], end="")
+            print(" --- ", end=" ")
+            print(sorted_list[-10:])
         else:
             print(f"{key} --- No data ---" )
             
@@ -160,5 +167,9 @@ if __name__ == '__main__':
             median_time = median(value)
             print(f"{key}")
             print(f"avg {round(avg_time, 1)} --- avg(sec) {round(avg_time / 1000, 1)} --- median {median_time} --- median (sec) {round(median_time / 1000, 1)} --- min {min_time} --- max {max_time} --- n {len(value)}")
+            sorted_list = sorted(value)
+            print(sorted_list[0:10], end="")
+            print(" --- ", end=" ")
+            print(sorted_list[-10:])
         else:
             print(f"{key} --- No data ---" )

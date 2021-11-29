@@ -4,6 +4,7 @@ import json
 import inspect
 from event_relation_timing import event_time_past, event_time_future, calculate_time_between_events
 from numpy.lib.function_base import average, median
+from evaluate import evaluate_predictions
 
 PARENT_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 sys.path.append(PARENT_FOLDER)
@@ -14,7 +15,7 @@ import datafusion_utils as utils
 """
 Actual datafusion-logic for ex3:
 """
-def data_fusion(prev_model, curr_model, next_model, timeframe):
+def data_fusion(prev_model, curr_model, next_model, timeframe, event_time_future_dict, event_time_past_dict):
     predictions_dictionary = {}
     for game_url in curr_model.keys():
         url = curr_model[game_url]["url"]
@@ -31,8 +32,8 @@ def data_fusion(prev_model, curr_model, next_model, timeframe):
         #Next only considers: events_time_future
 
         #Adjusting time for prev and next models' predictions:
-        prev_predictions = [utils.add_or_subtract_time(p, 0 - int(event_time_future[p["label"]] / 1000)) for p in prev_predictions]
-        next_predictions = [utils.add_or_subtract_time(p, int(event_time_past[p["label"]] / 1000)) for p in next_predictions]
+        prev_predictions = [utils.add_or_subtract_time(p, 0 - int(event_time_future_dict[p["label"]] / 1000)) for p in prev_predictions]
+        next_predictions = [utils.add_or_subtract_time(p, int(event_time_past_dict[p["label"]] / 1000)) for p in next_predictions]
 
         # Merge the predictions into 1 list
         new_prev_predictions = [p for p in prev_predictions if not utils.predicted_event_exists(current_predictions=current_predictions, prediction_object_to_check=p, time_frame=timeframe*1000)]
@@ -50,16 +51,17 @@ def data_fusion(prev_model, curr_model, next_model, timeframe):
 
 if __name__ == '__main__':
     args = sys.argv
-    if len(args) < 7:
-        print(f" 6 command line arguments expected, {len(args) - 1} found")
+    if len(args) < 8:
+        print(f" 7 command line arguments expected, {len(args) - 1} found")
         exit()
     #Have to take these arguments: Source_prev source_curr source_next output_folder:
-    source_prev = args[1]
-    source_current = args[2]
-    source_next = args[3]
-    source_labels = args[4]
-    dest = args[5]
-    timeframe = float(args[6])
+    source_prev = args[1] # ouput_test folder for past model
+    source_current = args[2] # ouput_test folder for current model
+    source_next = args[3] # ouput_test folder for future model
+    source_labels = args[4] # path to soccernet. Root folder for features/labels. Parent folder of leagues
+    dest = args[5] # Destination/output folder for the combined predictions
+    timeframe = float(args[6]) # The time period in which only one event of the same class can happen.
+    model_name = args[7] # Model name of own choosing
 
     utils.create_file_structure(source_prev, dest) #all models (prev, current, next) has same filestructure, so we might aswell use the prev-folder.
     prev_model = utils.create_prediction_dict(source_prev)
@@ -73,9 +75,13 @@ if __name__ == '__main__':
         event_time_future[event] = median(event_time_future[event])
     for event in event_time_past.keys():
         event_time_past[event] = median(event_time_past[event])
-    prediction_dict = data_fusion(prev_model, current_model, next_model, timeframe)
+    prediction_dict = data_fusion(prev_model, current_model, next_model, timeframe, event_time_future, event_time_past)
     
 
 
     utils.write_predictions(dest_folder=dest, prediction_dict=prediction_dict)
 
+
+    evaluate_predictions(soccer_net_path=source_labels,
+                            output_folder=dest,
+                            model_name=model_name)
