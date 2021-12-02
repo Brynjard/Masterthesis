@@ -1,14 +1,12 @@
 import os, sys
+import inspect
 from distutils.dir_util import copy_tree
 import json
-import inspect
-from event_relation_timing import event_time_past, event_time_future, calculate_time_between_events
 from numpy.lib.function_base import average, median
-from evaluate import evaluate_predictions
-
 PARENT_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 sys.path.append(PARENT_FOLDER)
-
+from evaluate import evaluate_predictions
+from event_relation_timing import event_time_past, event_time_future, calculate_time_between_events
 import datafusion_utils as utils
 
 
