@@ -7,6 +7,8 @@ sys.path.insert(0, parentdir)
 from delete_files import delete_files
 from distutils.dir_util import copy_tree
 import json
+import math
+import copy
 
 """
 This function takes in a folder with output-files from a trained model with a bunch of results_spotting.json-files (nested in soccernet-fashion),
@@ -141,29 +143,19 @@ Takes a pred_object and a time_adjustment and adjusts the time(both gameTime and
 If time_adjustment is < 0, the time is adjusted "back in time", and if its positive, we are shifting time in the future.
 """
 def add_or_subtract_time(pred_object, time_adjustment):
-    half, minute, second = convert_timestring_to_nums(pred_object)
- 
-    if time_adjustment < 0:
-        if minute == 0 and second == 0 and pred_object["label"] != "Kick-off":
-            return pred_object #ignoring cases where our pred_model has predicted something at 0:0 thats not kick-off.
-        if second + time_adjustment < 0: #subtracting time_adjustment from second (we know its negative)
-            minute -= 1
-            second = 60 + (time_adjustment + second)
-        else:
-            second -= time_adjustment
-    else:
-        if second + time_adjustment > 60:
-            minute += 1
-            second = time_adjustment - (60 - second)
-        else:
-            second += time_adjustment
-            
-    time_string = convert_nums_to_timestring(half, minute, second)
-    pred_object["gameTime"] = time_string
-    new_position = int(pred_object["position"]) + time_adjustment * 1000
-    pred_object["position"] = str(new_position)
-    return pred_object
+    half, _, _ = convert_timestring_to_nums(pred_object)
+    new_position = int(pred_object["position"]) + time_adjustment
+    minute = (new_position / 1000) / 60
 
+    if minute % 1 == 0:
+        second = 0
+    else:
+        second = math.floor(60 * math.modf(minute)[0])
+    minute = int(minute)
+    pred_object["gameTime"] = convert_nums_to_timestring(half, minute, second)
+    pred_object["position"] = new_position
+
+    return pred_object
 
 """
 This function takes a list of predictions, and filters out all events that have a name included in @invalid_events
@@ -176,5 +168,75 @@ INVALID_EVENTS_FUTURE_MODEL = ["Ball out of play", "Foul", "Substitution", "Offs
 def filter_prediction_on_events(preds, invalid_events):
     filtered = [p for p in preds if p["label"] not in invalid_events]
     return filtered
+
+def sort_predictions_on_position(preds):
+    sorted_preds = sorted(preds, key=lambda p : int(p["gameTime"][0]))
+    half_i = 0
+    for i, p in enumerate(sorted_preds):
+        if p["gameTime"][0] != "1":
+            half_i = i
+            break
+    sorted_preds[:half_i] = sorted(sorted_preds[:half_i], key=lambda p : int(p["position"]))
+    sorted_preds[half_i:] = sorted(sorted_preds[half_i:], key=lambda p : int(p["position"]))
+    return sorted_preds
+"""
+For a given list of preds, a window of time, a position and a half, this
+method finds all predictions in @preds that have a position within that window.
+"""
+def find_events_in_window(preds, min_pos, max_pos, half):
+    events_in_window = []
+    for p in preds:
+        pos = int(p["position"])
+        p_half = int(p["gameTime"][0])
+        if pos >= min_pos and pos <= max_pos and p_half == half:
+            events_in_window.append(p)
+    return events_in_window
+
+def convert_position_to_gameTime_string(position, half):
+    minute = (position / 1000) / 60
+
+    if minute % 1 == 0:
+        second = 0
+    else:
+        second = math.floor(60 * math.modf(minute)[0])
+    minute = int(minute)
+    return convert_nums_to_timestring(half, minute, second)
+
+def find_confident_pred(preds, label):
+    current_highest_c = 0
+    current_highest_p = None
+    for p in preds:
+        if p["label"] == label:
+            if float(p["confidence"]) > current_highest_c:
+                current_highest_c = float(p["confidence"]) 
+                current_highest_p = copy.deepcopy(p)
+    return current_highest_p
+
+"""Takes three predictions with same label, and 
+creates a new prediction that keeps every attribute from @current_p,
+except for the position which is averaged over the position of the three predictions."""
+def transform_position_avg(curr_p, past_p, future_p):
+    new_position = float(curr_p["position"])
+    relevant_candidates = 1
+    if past_p is not None and float(past_p["confidence"]) >= float(curr_p["confidence"]):
+        new_position += float(past_p["position"])
+        relevant_candidates += 1
+    if future_p is not None and float(future_p["confidence"]) >= float(curr_p["confidence"]):
+        new_position += float(future_p["position"])
+        relevant_candidates += 1
+
+    curr_p["position"] = new_position / relevant_candidates
+    curr_p["gameTime"] = convert_position_to_gameTime_string(int(curr_p["gameTime"][0]), new_position / relevant_candidates)
+
+def pseudo_borda_count(past_p, current_p, future_p):
+    for p in current_p:
+        past_candidate = find_confident_pred(past_p, p["label"])
+        future_candidate = find_confident_pred(future_p, p["label"])
+        transform_position_avg(p, past_candidate, future_candidate)
+    
+
+
+
+
 
 
