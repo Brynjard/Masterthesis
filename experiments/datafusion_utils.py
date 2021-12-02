@@ -7,6 +7,8 @@ sys.path.insert(0, parentdir)
 from delete_files import delete_files
 from distutils.dir_util import copy_tree
 import json
+import copy
+import math
 
 """
 This function takes in a folder with output-files from a trained model with a bunch of results_spotting.json-files (nested in soccernet-fashion),
@@ -116,6 +118,32 @@ def predicted_event_exists(current_predictions, prediction_object_to_check, time
     
     return False
 
+def find_events_in_window(preds, window, current_position, current_half): #Window is number of seconds, current_position is milliseconds(int)
+    min_interval = current_position - int(window / 2)
+    max_interval = current_position + int(window / 2)
+    relevant_events = []
+    for p in preds:
+        if int(p["position"]) >= min_interval and int(p["position"]) <= max_interval and int(p["gameTime"][0]) == current_half:
+            relevant_events.append(p)
+    return relevant_events
+
+
+
+
+def replace_event(current_predictions, prediction_object_to_check, time_frame):
+    min_interval = int(prediction_object_to_check["position"]) - int(time_frame / 2)
+    max_interval = int(prediction_object_to_check["position"]) + int(time_frame / 2)
+    event_type = prediction_object_to_check["label"]
+    index_switch_objects = None
+    for i, prediction_object in enumerate(current_predictions):
+        label = prediction_object["label"]
+        position = int(prediction_object["position"])
+        if label == event_type and position >= min_interval and position <= max_interval:
+            if float(prediction_object["confidence"]) < float(prediction_object_to_check["confidence"]):
+                index_switch_objects = i
+    
+    if index_switch_objects is not None:
+        current_predictions[index_switch_objects] = copy.deepcopy(prediction_object_to_check)
 
 """
 Takes a prediction json-object as input, and returns the game-half and time of the prediction as numbers:
@@ -141,27 +169,18 @@ Takes a pred_object and a time_adjustment and adjusts the time(both gameTime and
 If time_adjustment is < 0, the time is adjusted "back in time", and if its positive, we are shifting time in the future.
 """
 def add_or_subtract_time(pred_object, time_adjustment):
-    half, minute, second = convert_timestring_to_nums(pred_object)
- 
-    if time_adjustment < 0:
-        if minute == 0 and second == 0 and pred_object["label"] != "Kick-off":
-            return pred_object #ignoring cases where our pred_model has predicted something at 0:0 thats not kick-off.
-        if second + time_adjustment < 0: #subtracting time_adjustment from second (we know its negative)
-            minute -= 1
-            second = 60 + (time_adjustment + second)
-        else:
-            second -= time_adjustment
+    half, _, _ = convert_timestring_to_nums(pred_object)
+    new_position = int(pred_object["position"]) + time_adjustment
+    minute = (new_position / 1000) / 60
+
+    if minute % 1 == 0:
+        second = 0
     else:
-        if second + time_adjustment > 60:
-            minute += 1
-            second = time_adjustment - (60 - second)
-        else:
-            second += time_adjustment
-            
-    time_string = convert_nums_to_timestring(half, minute, second)
-    pred_object["gameTime"] = time_string
-    new_position = int(pred_object["position"]) + time_adjustment * 1000
-    pred_object["position"] = str(new_position)
+        second = math.floor(60 * math.modf(minute)[0])
+    minute = int(minute)
+    pred_object["gameTime"] = convert_nums_to_timestring(half, minute, second)
+    pred_object["position"] = new_position
+        
     return pred_object
 
 
@@ -177,4 +196,13 @@ def filter_prediction_on_events(preds, invalid_events):
     filtered = [p for p in preds if p["label"] not in invalid_events]
     return filtered
 
-
+def sort_predictions_on_position(preds):
+    sorted_preds = sorted(preds, key=lambda p: int(p["gameTime"][0]))
+    halftime_i = 0
+    for i, p in enumerate(sorted_preds):
+        if p["gameTime"][0] == "2":
+            halftime_i = i
+            break
+    sorted_preds[:halftime_i] = sorted(sorted_preds[:halftime_i], key=lambda p: int(p["position"]))
+    sorted_preds[halftime_i:] = sorted(sorted_preds[halftime_i:], key=lambda p: int(p["position"]))
+    return sorted_preds
