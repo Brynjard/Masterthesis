@@ -183,6 +183,23 @@ def add_or_subtract_time(pred_object, time_adjustment):
         
     return pred_object
 
+def convert_position_to_gamestring(position):
+    minute = (position / 1000) / 60
+
+    if minute % 1 == 0:
+        second = 0
+    else:
+        second = math.floor(60 * math.modf(minute)[0])
+    if len(str(int(minute))) == 1:
+        str_minute = "0" + str(int(minute))
+    else:
+        str_minute = str(int(minute))
+    if len(str(int(second))) == 1:
+        str_second = "0" + str(int(second))
+    else:
+        str_second = str(int(second))
+    return str_minute + ":" + str_second
+
 
 """
 This function takes a list of predictions, and filters out all events that have a name included in @invalid_events
