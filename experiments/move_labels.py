@@ -1,9 +1,9 @@
 import os
 import sys
-from shutil import copyfile, move
+from shutil import move
 
 """
-Moves label from @destination to @source according to the filestructure in source (liga/season/match)
+Moves labels with a given @filename from @destination to @source according to the filestructure in source (league/season/match)
 So that if we want to move labels into features, the labels for a match will be put in the same folder as the features for that match. 
 """
 
@@ -34,6 +34,6 @@ if __name__ == '__main__':
     
     source = args[1]
     destination = args[2]
-    fileending = args[3]
+    filename = args[3]
 
-    move_labels(source, destination, fileending)
+    move_labels(source, destination, filename)
