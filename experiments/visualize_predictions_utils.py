@@ -59,16 +59,17 @@ def create_subplot_half(preds, labels, half, class_name, subplot, legend_labels)
                 subplot.plot(x_points, y_points, "r--")
         
     ticks = []
-    for i in range(0, 3000000, 60000):
+    for i in range(-60000, 3000000, 60000):
         ticks.append(int(i))
+
     labels = [fu.convert_position_to_gamestring(int(i)) for i in ticks]
     subplot.set_xlim([0, 3000000])
     subplot.set_ylim([0, 1])
     subplot.set_xticks(ticks)
     subplot.set_xticklabels(labels)
-    plt.xlabel("Time(s)")
+    plt.xlabel("Time(m)")
     plt.ylabel("Confidence")
-    subplot.set(xlabel="Time(s)", ylabel="Confidence")
+    subplot.set(xlabel="Time(m)", ylabel="Confidence")
     #concating labels for legend:
     
     
@@ -99,7 +100,7 @@ ARGUMENT_MAPPER = {
     "dfk": "Direct free-kick",
     "yc": "Yellow card",
     "sont": "Shots on target",
-    "soft": "Shots of target",
+    "soft": "Shots off target",
     "Goal": "Goal",
     "rc": "Red card",
     "Penalty": "Penalty",
@@ -118,8 +119,8 @@ if __name__ == '__main__':
     preds_dictionary = fu.create_prediction_dict(pred_src)
     labels_dictionary = lu.create_label_dict_relative_urlkey(labels_src, "Labels-v2.json")
 
-    preds = preds_dictionary["england_epl/2014-2015/2015-05-17 - 18-00 Manchester United 1 - 1 Arsenal/results_spotting.json"]["predictions"]
-    labels = labels_dictionary["england_epl/2014-2015/2015-05-17 - 18-00 Manchester United 1 - 1 Arsenal/Labels-v2.json"]["annotations"]
+    preds = preds_dictionary["england_epl/2016-2017/2017-01-21 - 15-30 Liverpool 2 - 3 Swansea/results_spotting.json"]["predictions"]
+    labels = labels_dictionary["england_epl/2016-2017/2017-01-21 - 15-30 Liverpool 2 - 3 Swansea/Labels-v2.json"]["annotations"]
     
     #create_plot_half(preds, labels, 2, current_class)
     """legend_labels = []
