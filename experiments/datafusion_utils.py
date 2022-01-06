@@ -149,27 +149,41 @@ def replace_event(current_predictions, prediction_object_to_check, time_frame):
 Takes a prediction json-object as input, and returns the game-half and time of the prediction as numbers:
 half, minute, second
 """
-def convert_timestring_to_nums(pred_object):
+def convert_timestring_to_numbers(pred_object: dict):
     time_string = pred_object["gameTime"]
     half = int(time_string[0])
     time_split = time_string[4:].split(":")
-    minute = int(time_split[0])
-    second = int(time_split[1])
-    return half, minute, second
+    minutes = int(time_split[0])
+    seconds = int(time_split[1])
+    return half, minutes, seconds
 
-def convert_nums_to_timestring(half, minute, second):
-    time_string = ""
-    time_string += str(half) + " - " #adding half..
-    time_string += str(minute) + ":" #adding minute
-    time_string += str(second) #adding seconds
+"""
+Takes three integers; half, minute and second as input, and returns a timestamp in the following format:
+[half] - [minutes]:[seconds]
+Both minutes and seconds are added with two digits
+"""
+def convert_numbers_to_timestring(half: int, minutes: int, seconds: int) -> str:
+    
+    time_string = str(half) + " - " #adding half..
+    
+    minute_string = str(minutes)
+    if len(minute_string) == 1:
+        minute_string = "0" + minute_string
+    time_string += minute_string + ":" #adding minutes
+    
+    second_string = str(seconds)
+    if len(second_string) == 1:
+        second_string = "0" + second_string
+    time_string += second_string #adding seconds
+
     return time_string
 
 """
 Takes a pred_object and a time_adjustment and adjusts the time(both gameTime and position) of that prediction object. 
 If time_adjustment is < 0, the time is adjusted "back in time", and if its positive, we are shifting time in the future.
 """
-def add_or_subtract_time(pred_object, time_adjustment):
-    half, _, _ = convert_timestring_to_nums(pred_object)
+def add_or_subtract_time(pred_object: dict, time_adjustment: int) -> dict:
+    half, _, _ = convert_timestring_to_numbers(pred_object)
     new_position = int(pred_object["position"]) + time_adjustment
     minute = (new_position / 1000) / 60
 
@@ -178,8 +192,8 @@ def add_or_subtract_time(pred_object, time_adjustment):
     else:
         second = math.floor(60 * math.modf(minute)[0])
     minute = int(minute)
-    pred_object["gameTime"] = convert_nums_to_timestring(half, minute, second)
-    pred_object["position"] = new_position
+    pred_object["gameTime"] = convert_numbers_to_timestring(half, minute, second)
+    pred_object["position"] = str(new_position)
         
     return pred_object
 
