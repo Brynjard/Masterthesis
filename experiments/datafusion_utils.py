@@ -161,7 +161,10 @@ def convert_nums_to_timestring(half, minute, second):
     time_string = ""
     time_string += str(half) + " - " #adding half..
     time_string += str(minute) + ":" #adding minute
-    time_string += str(second) #adding seconds
+    second_string = str(second)
+    if len(second_string) == 1:
+        second_string = "0" + second_string
+    time_string += second_string
     return time_string
 
 """
