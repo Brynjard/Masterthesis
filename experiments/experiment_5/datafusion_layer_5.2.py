@@ -58,22 +58,20 @@ def filter_on_confidence(t_window, past_p, current_p, future_p): #Returns a list
     confident_preds = []
     #Iterate over t_window from 0:00 to 50:00 for both halves of a match. 
     #For a given window t_window: Gather all events from all predictions into separate "bins". Remove every one, but the one with the most confidence
-    t_window = t_window * 1000
+    t_window = int(t_window * 1000)
     #half 1:
-    for i in range(0, 3000000, t_window): 
+    for i in range(0, 3000000, 1000): 
         min_i = i
         max_i = i + t_window
         preds_in_window = get_most_confident_preds(min_i, max_i,past_p, current_p, future_p, 1)
-        print("1st half: For window: {} - {} we have {} preds.".format(min_i, max_i, len(preds_in_window)))
         if len(preds_in_window) > 0:
             for p in preds_in_window:
                 confident_preds.append(p)
     #for second half:
-    for i in range(0, 300000, t_window):
+    for i in range(0, 3000000, 1000):
         min_i = i
         max_i = i + t_window
         preds_in_window = get_most_confident_preds(min_i, max_i,past_p, current_p, future_p, 2)
-        print("2nd half: For window: {} - {} we have {} preds.".format(min_i, max_i, len(preds_in_window)))
         if len(preds_in_window) > 0:
             for p in preds_in_window:
                 confident_preds.append(p)
@@ -178,8 +176,8 @@ if __name__ == '__main__':
     print("New time: {}".format(ob["gameTime"]))
     print("New pos: {}".format(ob["position"]))"""
     
-    prediction_dict = data_fusion(prev_model, current_model, next_model, timeframe, event_time_future, event_time_past, int(filter_time_window))
-    """utils.write_predictions(dest_folder=dest, prediction_dict=prediction_dict)
+    prediction_dict = data_fusion(prev_model, current_model, next_model, timeframe, event_time_future, event_time_past, float(filter_time_window))
+    utils.write_predictions(dest_folder=dest, prediction_dict=prediction_dict)
     evaluate_predictions(soccer_net_path=source_labels,
                             output_folder=dest,
-                            model_name=model_name)"""
+                            model_name=model_name)

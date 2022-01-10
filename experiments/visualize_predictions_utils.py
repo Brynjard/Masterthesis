@@ -87,28 +87,6 @@ def create_visualization(classes, half, preds, labels, filename, game_url):
     fig.savefig("{}.png".format(filename))
     fig.clf()
 
-ARGUMENT_MAPPER = {
-    "Throw-in": "Throw-in",
-    "boop": "Ball out of play",
-    "Kick-off": "Kick-off",
-    "idk": "Indirect free-kick",
-    "Clearance": "Clearance",
-    "Foul": "Foul",
-    "Corner": "Corner",
-    "Substitution": "Substitution",
-    "Offside": "Offside",
-    "dfk": "Direct free-kick",
-    "yc": "Yellow card",
-    "sont": "Shots on target",
-    "soft": "Shots off target",
-    "Goal": "Goal",
-    "rc": "Red card",
-    "Penalty": "Penalty",
-    "yrc": "Yellow->red card"
-}
-
-    
-
 if __name__ == '__main__':
     args = sys.argv
     labels_src = args[1] #source of label-files

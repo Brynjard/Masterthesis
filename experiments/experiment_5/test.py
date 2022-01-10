@@ -1,28 +1,28 @@
 import copy
 events_1 = [
     {
-        "gameTime": "1 - 35:39",
+        "gameTime": "2 - 35:39",
         "label": "Penalty",
         "position": "23000",
         "half": "1",
         "confidence": "0.5"
     },
     {
-        "gameTime": "1 - 35:39",
+        "gameTime": "2 - 35:39",
         "label": "Goal",
         "position": "230300",
         "half": "1",
         "confidence": "0.2"
     },
     {
-        "gameTime": "1 - 35:39",
+        "gameTime": "2 - 35:39",
         "label": "Penalty",
         "position": "23500",
         "half": "1",
         "confidence": "0.9"
     },
     {
-        "gameTime": "1 - 35:39",
+        "gameTime": "2 - 35:39",
         "label": "Goal",
         "position": "29000",
         "half": "1",
@@ -31,21 +31,21 @@ events_1 = [
 ]
 events_2 = [
     {
-        "gameTime": "1 - 35:39",
+        "gameTime": "2 - 35:39",
         "label": "Goal",
         "position": "29500",
         "half": "1",
         "confidence": "0.5"
     },
     {
-        "gameTime": "1 - 35:39",
+        "gameTime": "2 - 35:39",
         "label": "Clearance",
         "position": "30500",
         "half": "1",
         "confidence": "0.5"
     },
     {
-        "gameTime": "1 - 35:39",
+        "gameTime": "2 - 35:39",
         "label": "Clearance",
         "position": "30600",
         "half": "1",
@@ -106,19 +106,19 @@ def filter_on_confidence(t_window, past_p, current_p, future_p): #Returns a list
     #For a given window t_window: Gather all events from all predictions into separate "bins". Remove every one, but the one with the most confidence
     t_window = t_window * 1000
     #half 1:
-    for i in range(0, 3000000, t_window): 
+    for i in range(0, 3000000, 1000): 
         min_i = i
         max_i = i + t_window
-        print("min_i: {}".format(min_i))
-        print("max_i: {}".format(max_i))
+        print("Window: {} - {}".format(min_i, max_i))
         preds_in_window = get_most_confident_preds(min_i, max_i,past_p, current_p, future_p, 1)
         if len(preds_in_window) > 0:
             for p in preds_in_window:
                 confident_preds.append(p)
     #for second half:
-    for i in range(0, 300000, t_window):
+    for i in range(0, 300000, 1000):
         min_i = i
         max_i = i + t_window
+        print("Window: {} - {}".format(min_i, max_i))
         preds_in_window = get_most_confident_preds(min_i, max_i,past_p, current_p, future_p, 2)
         if len(preds_in_window) > 0:
             for p in preds_in_window:
