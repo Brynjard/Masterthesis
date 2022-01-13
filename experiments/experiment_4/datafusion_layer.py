@@ -33,11 +33,21 @@ def data_fusion(prev_model, curr_model, next_model, timeframe, event_time_future
         prev_predictions = [utils.add_or_subtract_time(p, 0 - int(event_time_future_dict[p["label"]] / 1000)) for p in prev_predictions]
         next_predictions = [utils.add_or_subtract_time(p, int(event_time_past_dict[p["label"]] / 1000)) for p in next_predictions]
 
+        for p in prev_predictions:
+            p["model"] = "past"
+        
+        for p in next_predictions:
+            p["model"] = "future"
+        
+        for p in current_predictions:
+            p["model"] = "current"
+
         # Merge the predictions into 1 list
         new_prev_predictions = [p for p in prev_predictions if not utils.predicted_event_exists(current_predictions=current_predictions, prediction_object_to_check=p, time_frame=timeframe*1000)]
         all_predictions = current_predictions + new_prev_predictions
         new_next_predictions = [p for p in next_predictions if not utils.predicted_event_exists(current_predictions=all_predictions, prediction_object_to_check=p, time_frame=timeframe*1000)]
         all_predictions = all_predictions + new_next_predictions
+        
         # Add game to the prediction dict    
         predictions_dictionary[game_url] = {}
         predictions_dictionary[game_url]["url"] = url

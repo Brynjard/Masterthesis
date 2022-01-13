@@ -16,6 +16,9 @@ The scipt takes three arguments, the path to s@occernet, the path to the output 
 """
 
 def evaluate_predictions(soccer_net_path: str, predictions_folder: str, model_name: str):
+    log_file_name = datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + ".log"
+    logging.basicConfig(filename=log_file_name, level=logging.DEBUG)
+
     results = evaluate(SoccerNet_path=soccer_net_path, 
                 Predictions_path=predictions_folder,
                 split="test",
@@ -55,8 +58,6 @@ def evaluate_predictions(soccer_net_path: str, predictions_folder: str, model_na
     print("a_mAP visibility unshown per class: " +  str( a_mAP_per_class_unshown))
 
 if __name__ == '__main__':
-    log_file_name = datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + ".log"
-    logging.basicConfig(filename=log_file_name, level=logging.DEBUG)
     args = sys.argv
 
     if len(args) < 4:

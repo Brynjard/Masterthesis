@@ -1,4 +1,5 @@
 import sys, os, json, copy
+import datafusion_utils as fu
 """
 When we need to filter the labels/change labels this script can help us out. 
 This script offers method to extract labels and convert them to label_dicts on this form: 
@@ -78,6 +79,24 @@ def create_label_dict(src, label_name):
             predictions_dictionary[filename]["gameDate"] = gameDate
             predictions_dictionary[filename]["gameHomeTeam"] = gameHomeTeam
             predictions_dictionary[filename]["gameScore"] = gameScore
+    return predictions_dictionary
+"""Does the same as above, but where each key is the relative filepath e.g 
+italy_serie-a/2016-2017/2017-02-19 - 17-00 Chievo 1 - 3 Napoli/Labels-v2.json"""
+def create_label_dict_relative_urlkey(src, label_name):
+    filenames = []
+    find_files_in_folders(filenames, src)
+    predictions_dictionary = {}
+    for filename in filenames:
+        if label_name in filename:
+            url_local, annotations, gameAwayTeam, gameDate, gameHomeTeam, gameScore = extract_events_from_file(filename)
+            key_name = fu.strip_filename_to_relative(filename)
+            predictions_dictionary[key_name] = {}
+            predictions_dictionary[key_name]["url"] = url_local
+            predictions_dictionary[key_name]["annotations"] = annotations
+            predictions_dictionary[key_name]["gameAwayTeam"] = gameAwayTeam
+            predictions_dictionary[key_name]["gameDate"] = gameDate
+            predictions_dictionary[key_name]["gameHomeTeam"] = gameHomeTeam
+            predictions_dictionary[key_name]["gameScore"] = gameScore
     return predictions_dictionary
 """
 Writes labels to files with specified filename(new_file_ending) from a dictionary representing labels.
