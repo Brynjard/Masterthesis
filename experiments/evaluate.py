@@ -12,15 +12,15 @@ from datafusion_utils import create_prediction_dict
 
 """
 Evaluates the performance of the predictions.
-The scipt takes three arguments, the path to soccernet, the path to the output folder with the predictions and model name.
+The scipt takes three arguments, the path to s@occernet, the path to the output folder with the predictions and model name.
 """
 
-def evaluate_predictions(soccer_net_path: str, output_folder: str, model_name: str):
+def evaluate_predictions(soccer_net_path: str, predictions_folder: str, model_name: str):
     log_file_name = datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + ".log"
     logging.basicConfig(filename=log_file_name, level=logging.DEBUG)
 
     results = evaluate(SoccerNet_path=soccer_net_path, 
-                Predictions_path=output_folder,
+                Predictions_path=predictions_folder,
                 split="test",
                 prediction_file="results_spotting.json",
                 version=2)
@@ -41,13 +41,26 @@ def evaluate_predictions(soccer_net_path: str, output_folder: str, model_name: s
     logging.info("a_mAP visibility unshown: " +  str( a_mAP_unshown))
     logging.info("a_mAP visibility unshown per class: " +  str( a_mAP_per_class_unshown))
 
-    model_output_as_dict = create_prediction_dict(output_folder)
+    model_output_as_dict = create_prediction_dict(predictions_folder)
     events_per_game = []
     for game in model_output_as_dict.keys():
         events_per_game.append(len(model_output_as_dict[game]["predictions"]))
     avg = sum(events_per_game) / len(events_per_game)
     logging.info("Average number of events per game: {}".format(avg))
 
+    start_list = [float(str(a_mAP)) * 100, float(str(a_mAP_visible)) * 100, float(str(a_mAP_unshown)) * 100]
+    
+    total_per_class = [float(x) * 100 for x in str(a_mAP_per_class).replace("[", "").replace("]", "").split(", ")]
+    visible_per_class = [float(x) * 100 for x in str(a_mAP_per_class_visible).replace("[", "").replace("]", "").split(", ")]
+    unshown_per_class = [float(x) * 100 for x in str(a_mAP_per_class_unshown).replace("[", "").replace("]", "").split(", ")]
+    total_list = start_list + total_per_class
+    visible_list = start_list + visible_per_class
+    unshown_list = start_list + unshown_per_class
+
+    log_string = "\nFor google sheet: \n" + str(total_list).replace("[", "").replace("]", "") + "\n" + str(visible_list).replace("[", "").replace("]", "") + "\n" + str(unshown_list).replace("[", "").replace("]", "") + "\n"
+    logging.info(log_string)
+    
+    
     print("Model name: " + model_name)
     print("Best Performance at end of training ")
     print("a_mAP visibility all: " +  str(a_mAP))
@@ -56,6 +69,7 @@ def evaluate_predictions(soccer_net_path: str, output_folder: str, model_name: s
     print("a_mAP visibility visible per class: " +  str( a_mAP_per_class_visible))
     print("a_mAP visibility unshown: " +  str( a_mAP_unshown))
     print("a_mAP visibility unshown per class: " +  str( a_mAP_per_class_unshown))
+    print(log_string)
 
 if __name__ == '__main__':
     args = sys.argv
@@ -65,12 +79,12 @@ if __name__ == '__main__':
         exit()
 
     model_name = args[3]
-    soccer_net_path =  args[1]
+    soccer_net_path = args[1]
     split = "test"
-    output_folder = args[2]
+    predictions_folder = args[2]
     output_results = f"results_spotting_{split}.zip"
 
 
     evaluate_predictions(soccer_net_path=soccer_net_path,
-                            output_folder=output_folder,
+                            predictions_folder=predictions_folder,
                             model_name=model_name)
