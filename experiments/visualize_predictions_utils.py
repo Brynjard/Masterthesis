@@ -73,10 +73,10 @@ def create_subplot_half(preds, labels, half, class_name, subplot, legend_labels)
     #concating labels for legend:
     
     
-def create_visualization(classes, half, preds, labels):
+def create_visualization(classes, half, preds, labels, filename, game_url):
     legend_labels = []
-    fig, axes = plt.subplots(len(classes), figsize=(30, 8))
-    fig.suptitle("Half: {}".format(half))
+    fig, axes = plt.subplots(len(classes), figsize=(50, 50))
+    fig.suptitle(game_url)
     if len(classes) > 1:
         for i, c in enumerate(classes):
             create_subplot_half(preds, labels, half, c, axes[i], legend_labels)
@@ -84,44 +84,24 @@ def create_visualization(classes, half, preds, labels):
         create_subplot_half(preds, labels, half, classes[0], axes, legend_labels)
     fig.tight_layout()
     fig.legend()
-    fig.savefig("visual_out.png")
+    fig.savefig("{}.png".format(filename))
     fig.clf()
-
-ARGUMENT_MAPPER = {
-    "Throw-in": "Throw-in",
-    "boop": "Ball out of play",
-    "Kick-off": "Kick-off",
-    "idk": "Indirect free-kick",
-    "Clearance": "Clearance",
-    "Foul": "Foul",
-    "Corner": "Corner",
-    "Substitution": "Substitution",
-    "Offside": "Offside",
-    "dfk": "Direct free-kick",
-    "yc": "Yellow card",
-    "sont": "Shots on target",
-    "soft": "Shots off target",
-    "Goal": "Goal",
-    "rc": "Red card",
-    "Penalty": "Penalty",
-    "yrc": "Yellow->red card"
-}
-
-    
 
 if __name__ == '__main__':
     args = sys.argv
     labels_src = args[1] #source of label-files
     pred_src = args[2] #source of pred-files
-    classes = args[3:]  #which class to evaluate?
-    classes = [ARGUMENT_MAPPER[c] for c in classes]
+    filename = args[3]
+    #classes = args[4:]  #which class to evaluate?
+    #classes = [ARGUMENT_MAPPER[c] for c in classes]
+    classes = ["Goal", "Kick-off", "Shots off target", "Shots on target", "Ball out of play", "Throw-in", "Clearance", "Corner", "Foul", "Indirect free-kick", "Direct free-kick", "Penalty", "Yellow card", "Red card","Yellow->red card", "Offside", "Substitution"]
 
     preds_dictionary = fu.create_prediction_dict(pred_src)
     labels_dictionary = lu.create_label_dict_relative_urlkey(labels_src, "Labels-v2.json")
 
     preds = preds_dictionary["england_epl/2016-2017/2017-01-21 - 15-30 Liverpool 2 - 3 Swansea/results_spotting.json"]["predictions"]
     labels = labels_dictionary["england_epl/2016-2017/2017-01-21 - 15-30 Liverpool 2 - 3 Swansea/Labels-v2.json"]["annotations"]
-    
+    game_url = "england_epl/2016-2017/2017-01-21 - 15-30 Liverpool 2 - 3 Swansea"
     #create_plot_half(preds, labels, 2, current_class)
     """legend_labels = []
     fig, axes = plt.subplots(5, figsize=(30, 8))
@@ -129,7 +109,8 @@ if __name__ == '__main__':
     create_subplot_half(preds, labels, 2, "Goal", axes[0], legend_labels)
     create_subplot_half(preds, labels, 2, "Kick-off", axes[1], legend_labels)
     create_subplot_half(preds, labels, 2, "Throw-in", axes[2], legend_labels)"""
-    create_visualization(classes, 1, preds, labels)
+    create_visualization(classes, 1, preds, labels, "{}_half1".format(filename), game_url)
+    create_visualization(classes, 2, preds, labels, "{}_half2".format(filename), game_url)
 
     
 

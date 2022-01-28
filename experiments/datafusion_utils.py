@@ -175,7 +175,6 @@ def convert_numbers_to_timestring(half: int, minutes: int, seconds: int) -> str:
     if len(second_string) == 1:
         second_string = "0" + second_string
     time_string += second_string #adding seconds
-
     return time_string
 
 """
