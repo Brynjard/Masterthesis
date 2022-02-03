@@ -31,9 +31,10 @@ EVENT_RELATIONS_PAST_MODEL = {
 
 EVENT_RELATIONS_FUTURE_MODEL = {
     "Ball out of play": ["Throw-in", "Clearance", "Corner"],
-    "Foul": ["Indirect free-kick", "Direct free-kick", "Yellow card", "Red card"],
+    "Foul": ["Indirect free-kick", "Direct free-kick", "Yellow card", "Red card", "Penalty", "Yellow->red card"],
     "Offside": ["Indirect free-kick"],
-    "Goal": ["Kick-off"]
+    "Goal": ["Kick-off"],
+    "Shots off target": ["Ball out of play"]
 }
 
 """
@@ -110,28 +111,27 @@ def write_annotations(prediction_dict, new_file_ending):
 """
 Removes events that are irrelevant for next-model (substition, offside, etc..)
 """
-def filter_events_for_next(annotations_dict):
+def filter_events_for_past(annotations_dict):
     for game in annotations_dict.keys():
         annotations = annotations_dict[game]["annotations"]
-        invalid_labels = ["Ball out of play", "Foul", "Substitution", "Offside", "Shots on target", "Shots off target", "Goal"]
         valid_labels = []
 
         for annotation in annotations: 
-            if annotation["label"] not in invalid_labels:
+            if annotation["label"] in EVENT_RELATIONS_PAST_MODEL.keys():
                 valid_labels.append(annotation)
         annotations_dict[game]["annotations"] = valid_labels
 
 """
 Removes events that are irrelevant for past-model (kick-off, throw-in, etc..)
 """
-def filter_events_for_prev(annotations_dict):
+def filter_events_for_future(annotations_dict):
     for game in annotations_dict.keys():
         annotations = annotations_dict[game]["annotations"]
-        invalid_labels = ["Throw-in", "Yellow->red card", "Kick-off", "Indirect free-kick", "Clearance", "Corner", "Substitution", "Direct free-kick", "Yellow card", "Shots on target", "Shots off target", "Red card", "Penalty"]
+
         valid_labels = []
 
         for annotation in annotations: 
-            if annotation["label"] not in invalid_labels:
+            if annotation["label"] in EVENT_RELATIONS_FUTURE_MODEL.keys():
                 valid_labels.append(annotation)
         annotations_dict[game]["annotations"] = valid_labels
 

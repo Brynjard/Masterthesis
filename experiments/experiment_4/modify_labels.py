@@ -14,9 +14,9 @@ labels for kick-off for example, since we cannot infer that a kick-off happened 
 if __name__ == '__main__':
     args = sys.argv
     label_src =  args[1]
-    ## Use labels from ex2. to create label-dictionaries:
+    
     label_dict = utils.create_label_dict(label_src, "Labels-v2.json")
-    ## Filter labels in accordance with ex3:
+    ## Filter labels:
     future_dict = utils.create_event_dict_for_future_model(label_dict)
     past_dict = utils.create_event_dict_for_past_model(label_dict)
     
@@ -24,6 +24,6 @@ if __name__ == '__main__':
     # utils.print_events(future_dict)
     # utils.print_events(past_dict)
     
-    ## Create new labels for ex3:
-    utils.write_annotations(future_dict, "Labels-v2-future-ex4.json")
-    utils.write_annotations(past_dict, "Labels-v2-past-ex4.json")
+    ## Create new labels for ex4:
+    utils.write_annotations(future_dict, "Labels-v2-future-ex4-20220128.json")
+    utils.write_annotations(past_dict, "Labels-v2-past-ex4-20220128.json")

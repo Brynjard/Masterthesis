@@ -15,11 +15,11 @@ if __name__ == '__main__':
     args = sys.argv
     label_src =  args[1]
     #Use labels from ex2. to create label-dictionaries:
-    prev_dict = utils.create_label_dict(label_src, "Labels-v2-previous.json")
-    next_dict = utils.create_label_dict(label_src, "Labels-v2-next.json")
+    prev_dict = utils.create_label_dict(label_src, "Labels-v2-ex2-previous-20220128.json")
+    next_dict = utils.create_label_dict(label_src, "Labels-v2-ex2-next-20220128.json")
     #Filter labels in accordance with ex3:
-    utils.filter_events_for_next(next_dict)
-    utils.filter_events_for_prev(prev_dict)
+    utils.filter_events_for_past(next_dict)
+    utils.filter_events_for_future(prev_dict)
     #Create new labels for ex3:
-    utils.write_annotations(next_dict, "Labels-v2-next-ex3.json")
-    utils.write_annotations(prev_dict, "Labels-v2-previous-ex3.json")
+    utils.write_annotations(next_dict, "Labels-v2-ex3-next-20220128.json")
+    utils.write_annotations(prev_dict, "Labels-v2-ex3-previous-20220128.json")
