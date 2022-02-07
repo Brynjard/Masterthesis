@@ -111,9 +111,3 @@ if __name__ == '__main__':
     create_subplot_half(preds, labels, 2, "Throw-in", axes[2], legend_labels)"""
     create_visualization(classes, 1, preds, labels, "{}_half1".format(filename), game_url)
     create_visualization(classes, 2, preds, labels, "{}_half2".format(filename), game_url)
-
-    
-
-
-
-

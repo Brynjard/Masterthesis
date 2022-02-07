@@ -26,6 +26,15 @@ def data_fusion(prev_model, curr_model, next_model, timeframe):
         #Filtering prev and next predictions on events that are invalid for them:
         prev_predictions = utils.filter_prediction_on_events(prev_predictions, utils.INVALID_EVENTS_PAST_MODEL)
         next_predictions = utils.filter_prediction_on_events(next_predictions, utils.INVALID_EVENTS_FUTURE_MODEL)
+
+        #Adding model-tag to predictions:
+        for p in current_predictions:
+            p["model"] = "current"
+        
+        for p in prev_predictions:
+            p["model"] = "past"
+        for p in next_predictions:
+            p["model"] = "future"
     
         #Prev only considers: events_time_past
         #Next only considers: events_time_future
@@ -35,10 +44,11 @@ def data_fusion(prev_model, curr_model, next_model, timeframe):
         next_predictions = [utils.add_or_subtract_time(p, int(event_time_past[p["label"]] / 1000)) for p in next_predictions]
 
         # Merge the predictions into 1 list
-        new_prev_predictions = [p for p in prev_predictions if not utils.predicted_event_exists(current_predictions=current_predictions, prediction_object_to_check=p, time_frame=timeframe*1000)]
+        """new_prev_predictions = [p for p in prev_predictions if not utils.predicted_event_exists(current_predictions=current_predictions, prediction_object_to_check=p, time_frame=timeframe*1000)]
         all_predictions = current_predictions + new_prev_predictions
         new_next_predictions = [p for p in next_predictions if not utils.predicted_event_exists(current_predictions=all_predictions, prediction_object_to_check=p, time_frame=timeframe*1000)]
-        all_predictions = all_predictions + new_next_predictions
+        all_predictions = all_predictions + new_next_predictions"""
+        all_predictions = current_predictions + prev_predictions + next_predictions
         # Add game to the prediction dict    
         predictions_dictionary[game_url] = {}
         predictions_dictionary[game_url]["url"] = url
