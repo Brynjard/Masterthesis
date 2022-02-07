@@ -1,5 +1,9 @@
 ## Experiments for thesis.  
 
+### /count_predictions.py:
+- Script for counting the number of predictions each model (past, future, current) contributes to the combined model. Takes the folder where the merged predictions are located as parameter.
+Usage:  
+`python3 count_predictions.py <predictions_source_folder>`
 
 ### /datafusion_utils.py:
 - A package with functions used for fusing the different models.  
