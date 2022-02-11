@@ -149,10 +149,23 @@ def get_new_past_annotation(current_event, start_index, annotations):
             return new_event
     return None
 
+def get_new_past_annotation_4_3(current_event, start_index, annotations):
+    for i in range(start_index - 1, start_index - 10, -1):
+        if i < 0:
+            return None
+        event = annotations[i]
+        if event["label"] == current_event["label"]:
+            return None
+        elif event["label"] in EVENT_RELATIONS_PAST_MODEL[current_event["label"]]:
+            new_event = copy.deepcopy(current_event)
+            new_event["label"] = event["label"]
+            return new_event
+    return None
+
 """
 Creates a new dictionary with only valid events
 """
-def create_event_dict_for_future_model(annotations_dict):
+def create_event_dict_for_future_model_4_3(annotations_dict):
     labels_dict = copy.deepcopy(annotations_dict)
     for game in annotations_dict.keys():
         annotations = annotations_dict[game]["annotations"]
@@ -163,6 +176,21 @@ def create_event_dict_for_future_model(annotations_dict):
                 # annotation["label"] = Ball out of Play
                 new_annotation = get_new_future_annotation(annotation, index, annotations)
                 if new_annotation is not None and new_annotation["visibility"] == "visible":
+                    valid_annotations.append(new_annotation)
+        labels_dict[game]["annotations"] = valid_annotations
+    return labels_dict
+
+def create_event_dict_for_future_model_4_3(annotations_dict):
+    labels_dict = copy.deepcopy(annotations_dict)
+    for game in annotations_dict.keys():
+        annotations = annotations_dict[game]["annotations"]
+        valid_annotations = []
+
+        for index, annotation in enumerate(annotations): 
+            if annotation["label"] in EVENT_RELATIONS_FUTURE_MODEL.keys():
+                # annotation["label"] = Ball out of Play
+                new_annotation = get_new_future_annotation_4_3(annotation, index, annotations)
+                if new_annotation is not None:
                     valid_annotations.append(new_annotation)
         labels_dict[game]["annotations"] = valid_annotations
     return labels_dict
@@ -181,10 +209,23 @@ def get_new_future_annotation(current_event, start_index, annotations):
             return new_event
     return None
 
+def get_new_future_annotation_4_3(current_event, start_index, annotations):
+    for i in range(start_index + 1, start_index + 10, 1):
+        if i > len(annotations) - 1:
+            return None
+        event = annotations[i]
+        if event["label"] == current_event["label"]:
+            return None
+        elif event["label"] in EVENT_RELATIONS_FUTURE_MODEL[current_event["label"]]:
+            new_event = copy.deepcopy(current_event)
+            new_event["label"] = event["label"]
+            return new_event
+    return None
+
 """
 Creates a new dictionary with only valid events
 """
-def create_event_dict_for_past_model(annotations_dict):
+def create_event_dict_for_past_model_4_3(annotations_dict):
     labels_dict = copy.deepcopy(annotations_dict)
     for game in annotations_dict.keys():
         annotations = annotations_dict[game]["annotations"]
@@ -192,8 +233,8 @@ def create_event_dict_for_past_model(annotations_dict):
 
         for index, annotation in enumerate(annotations): 
             if annotation["label"] in EVENT_RELATIONS_PAST_MODEL.keys():
-                new_annotation = get_new_past_annotation(annotation, index, annotations)
-                if new_annotation is not None and new_annotation["visibility"] == "visible":
+                new_annotation = get_new_past_annotation_4_3(annotation, index, annotations)
+                if new_annotation is not None:
                     valid_annotations.append(new_annotation)
         labels_dict[game]["annotations"] = valid_annotations
     return labels_dict
