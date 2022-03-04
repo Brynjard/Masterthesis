@@ -106,6 +106,6 @@ if __name__ == '__main__':
     
     prediction_dict = data_fusion(prev_model, current_model, next_model, timeframe, event_time_future, event_time_past)
     utils.write_predictions(dest_folder=dest, prediction_dict=prediction_dict)
-    evaluate_predictions(soccer_net_path=source_labels,
+    """evaluate_predictions(soccer_net_path=source_labels,
                             output_folder=dest,
-                            model_name=model_name)
+                            model_name=model_name)"""

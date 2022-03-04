@@ -55,7 +55,7 @@ def get_most_confident_preds(min_pos, max_pos, past_p, current_p, future_p, half
     return candidate_preds
 
 def filter_on_confidence(t_window, past_p, current_p, future_p): #Returns a list of predictions after filtering on confidence, according to 5.2
-    candidate_preds = []
+    candidate_preds = [] #Best candidate from each time-window for.
     #Iterate over t_window from 0:00 to 50:00 for both halves of a match. 
     #For a given window t_window: Gather all events from all predictions into separate "bins". Remove every one, but the one with the most confidence
     t_window = int(t_window * 1000)
@@ -76,17 +76,17 @@ def filter_on_confidence(t_window, past_p, current_p, future_p): #Returns a list
         if len(preds_in_window) > 0:
             for p in preds_in_window:
                 candidate_preds.append(p)
-    most_confident_preds = []
+    """most_confident_preds = []
     for p in candidate_preds:
         min_pos = int(p["position"]) - (t_window // 2)
         max_pos = int(p["position"]) + (t_window // 2)
         class_candidates = [c_p for c_p in candidate_preds if int(c_p["position"]) >= min_pos and int(c_p["position"]) <= max_pos and c_p["label"] == p["label"]]
 
         class_candidates.sort(key=lambda p: float(p["confidence"]), reverse=True)
-        most_confident_preds.append(class_candidates[0])
+        most_confident_preds.append(class_candidates[0])"""
 
     
-    return most_confident_preds
+    return candidate_preds
 
 
 """
@@ -189,6 +189,6 @@ if __name__ == '__main__':
     
     prediction_dict = data_fusion(prev_model, current_model, next_model, timeframe, event_time_future, event_time_past, float(filter_time_window))
     utils.write_predictions(dest_folder=dest, prediction_dict=prediction_dict)
-    evaluate_predictions(soccer_net_path=source_labels,
+    """evaluate_predictions(soccer_net_path=source_labels,
                             output_folder=dest,
-                            model_name=model_name)
+                            model_name=model_name)"""

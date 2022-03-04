@@ -60,11 +60,12 @@ class SoccerNetClips(Dataset):
         elif version == 3:
             self.dict_event = EVENT_DICTIONARY_V2
             self.num_classes = 17
-            self.labels="Labels-v2-next-ex3.json"
+            self.labels="Labels-v2-ex3-next-20220128.json"
+            
         elif version == 4:
             self.dict_event = EVENT_DICTIONARY_V2
             self.num_classes = 17
-            self.labels="Labels-v2-previous-ex3.json"
+            self.labels="Labels-v2-ex3-previous-20220128.json"
 
         logging.info("Checking/Download features and labels locally")
         downloader = SoccerNetDownloader(path)
@@ -177,11 +178,11 @@ class SoccerNetClipsTesting(Dataset):
         elif version == 3:
             self.dict_event = EVENT_DICTIONARY_V2
             self.num_classes = 17
-            self.labels="Labels-v2-next-ex3.json"
+            self.labels="Labels-v2-ex3-next-20220128.json"
         elif version == 4:
             self.dict_event = EVENT_DICTIONARY_V2
             self.num_classes = 17
-            self.labels="Labels-v2-previous-ex3.json"
+            self.labels="Labels-v2-ex3-previous-20220128.json"
 
         logging.info("Checking/Download features and labels locally")
         downloader = SoccerNetDownloader(path)

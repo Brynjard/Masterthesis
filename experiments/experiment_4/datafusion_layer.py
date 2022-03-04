@@ -43,10 +43,12 @@ def data_fusion(prev_model, curr_model, next_model, timeframe, event_time_future
             p["model"] = "current"
 
         # Merge the predictions into 1 list
-        new_prev_predictions = [p for p in prev_predictions if not utils.predicted_event_exists(current_predictions=current_predictions, prediction_object_to_check=p, time_frame=timeframe*1000)]
+        """new_prev_predictions = [p for p in prev_predictions if not utils.predicted_event_exists(current_predictions=current_predictions, prediction_object_to_check=p, time_frame=timeframe*1000)]
         all_predictions = current_predictions + new_prev_predictions
         new_next_predictions = [p for p in next_predictions if not utils.predicted_event_exists(current_predictions=all_predictions, prediction_object_to_check=p, time_frame=timeframe*1000)]
-        all_predictions = all_predictions + new_next_predictions
+        all_predictions = all_predictions + new_next_predictions"""
+        all_predictions = prev_predictions + current_predictions + next_predictions
+        
         
         # Add game to the prediction dict    
         predictions_dictionary[game_url] = {}
@@ -89,7 +91,7 @@ if __name__ == '__main__':
 
     utils.write_predictions(dest_folder=dest, prediction_dict=prediction_dict)
 
-
-    evaluate_predictions(soccer_net_path=source_labels,
+    #After 20220128 - we evaluate separately..
+    """evaluate_predictions(soccer_net_path=source_labels,
                             output_folder=dest,
-                            model_name=model_name)
+                            model_name=model_name)"""

@@ -9,7 +9,7 @@ def create_labels_next(filepath):
     split = filepath.split("/")
     
     # filepath = os.path.abspath(filepath)
-    write_filepath = filepath.replace(split[-1], "Labels-v2-next.json")
+    write_filepath = filepath.replace(split[-1], "Labels-v2-ex2-next-20220128.json")
     if os.path.isfile(write_filepath):
         return
     file = open(filepath)
@@ -35,7 +35,7 @@ def create_labels_previous(filepath):
     split = filepath.split("/")
 
     # filepath = os.path.abspath(filepath)
-    write_filepath = filepath.replace(split[-1], "Labels-v2-previous.json")
+    write_filepath = filepath.replace(split[-1], "Labels-v2-ex2-previous-20220128.json")
     if os.path.isfile(write_filepath):
         return
     file = open(filepath)
