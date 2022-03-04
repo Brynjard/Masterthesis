@@ -5,7 +5,7 @@ from SoccerNet.utils import getListGames
 from SoccerNet.Evaluation.utils import LoadJsonFromZip, EVENT_DICTIONARY_V2, INVERSE_EVENT_DICTIONARY_V2
 from SoccerNet.Evaluation.utils import EVENT_DICTIONARY_V1, INVERSE_EVENT_DICTIONARY_V1
 from SoccerNet.Evaluation.ActionSpotting import label2vector, predictions2vector, compute_class_scores, compute_mAP, delta_curve, average_mAP
-
+import glob
 import json
 import zipfile
 from tqdm import tqdm
@@ -38,8 +38,8 @@ def evaluate_no_delta(SoccerNet_path, Predictions_path, prediction_file="results
         # convert labels to vector
         label_half_1, label_half_2 = label2vector(
             labels, num_classes=num_classes, version=version)
+        print(label_half_1.shape)
         # print(version)
-        print(label_half_1)
         # print(label_half_2)
 
 
@@ -72,29 +72,28 @@ def evaluate_no_delta(SoccerNet_path, Predictions_path, prediction_file="results
         detections_numpy.append(predictions_half_1)
         detections_numpy.append(predictions_half_2)
 
-
         ## Filter on confidence?
         ## count number of predictions per class
         ## count number of labels per class
         ## Calculate TP
         ## Add these numbers to global 
 
-        exit()
-
         
 
-        closest_numpy = np.zeros(label_half_1.shape)-1
+        closest_numpy = np.zeros(label_half_1.shape)-1 #10800 x 17 with -1 values.
         #Get the closest action index
-        for c in np.arange(label_half_1.shape[-1]):
-            indexes = np.where(label_half_1[:,c] != 0)[0].tolist()
-            if len(indexes) == 0 :
+        for c in np.arange(label_half_1.shape[-1]): #for each class (17 times..)
+            indexes = np.where(label_half_1[:,c] != 0)[0].tolist() #index of Every frame in first half that is annotated with this class.. 
+            if len(indexes) == 0 : #If we have no annotations in first half..
                 continue
             indexes.insert(0,-indexes[0])
             indexes.append(2*closest_numpy.shape[0])
-            for i in np.arange(len(indexes)-2)+1:
+            for i in np.arange(len(indexes)-2)+1: #For all frames annotated with c..
                 start = max(0,(indexes[i-1]+indexes[i])//2)
                 stop = min(closest_numpy.shape[0], (indexes[i]+indexes[i+1])//2)
                 closest_numpy[start:stop,c] = label_half_1[indexes[i],c]
+                exit()
+        
         closests_numpy.append(closest_numpy)
 
         closest_numpy = np.zeros(label_half_2.shape)-1
