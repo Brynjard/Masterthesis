@@ -8,9 +8,12 @@ if __name__ == '__main__':
     if len(args) < 3:
         print(f"3 command line arguments expected, {len(args) - 1} found")
         exit()
+    elif len(args) == 4:
+        confidence_threshold = float(args[3])
+    else:
+        confidence_threshold = 0.0
 
     soccer_net_path = args[1]
     predictions_folder = args[2]
 
-    evaluate_no_delta(SoccerNet_path=soccer_net_path,
-                            Predictions_path=predictions_folder)
+    metric_dict = evaluate_no_delta(SoccerNet_path=soccer_net_path, Predictions_path=predictions_folder, confidence_threshold=confidence_threshold)
