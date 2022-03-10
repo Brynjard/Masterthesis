@@ -1,3 +1,6 @@
 **/.DS_Store
 __pycache__/
 **/fusion_out
+**/graphs
+**/logs
+**/original_labels

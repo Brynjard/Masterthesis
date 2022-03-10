@@ -26,10 +26,9 @@ if __name__ == '__main__':
     if len(args) != 3:
         print(f"2 command line arguments expected, {len(args) - 1} found")
         exit()
-    confirmation = input("WARNING: This will delete all files with name: {} in source folder and all its sub-folders. Continue? (yes/[no]):\n")
+
+    source = args[1]
+    label_name = args[2]
+    confirmation = input(f"WARNING: This will delete all files with name: '{label_name}' in source folder and all its sub-folders. Continue? (yes/[no]):\n")
     if confirmation == "yes":
-        source = args[1]
-        label_name = args[2]
         delete_files(source, label_name)
-    else:
-        exit()
