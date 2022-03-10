@@ -1,3 +1,5 @@
+from alternative_evaluation import create_scores_dict
+
 template_table_start = """
 \\begin{table}[h!bt]
 \\centering
@@ -43,9 +45,9 @@ def create_table_statistics(model_name, scores):
         threshold_row += str(current_threshold) + " & "
         for j,c in enumerate(data.keys()):
             if j == len(data.keys()) - 1:
-                threshold_row += str(data[c][i]) + " \\\\"
+                threshold_row += str(round(data[c][i], 2)) + " \\\\"
             else:
-                threshold_row += str(data[c][i]) + " & "
+                threshold_row += str(round(data[c][i], 2)) + " & "
         current_threshold = round(current_threshold + threshold_tick, 2)
         data_string += threshold_row
     table_string = template_table_start + data_string + template_table_end
@@ -118,4 +120,8 @@ if __name__ == '__main__':
             "Yellow->red card": [2.13, 3.13, 2.55, 6.55, 4.33, 4.33, 1.23, 9.55, 3.44, 4.55]
         }
     }
-    create_table_statistics("precision", test_dict)
+
+    scores_dict = create_scores_dict(SoccerNet_path="/global/D1/projects/soccer_clipping/haakhern_brynjabm_thesis/original_features", Predictions_path="/global/D1/projects/soccer_clipping/haakhern_brynjabm_thesis/brynjard/ContextAwareActionSpotting/experiments/experiment_5/fusion_out")
+
+
+    print(create_table_statistics("precision", scores_dict))
