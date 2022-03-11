@@ -1,12 +1,14 @@
+import numpy as np
 from alternative_evaluation import create_scores_dict
 
 template_table_start = """
 \\begin{table}[h!bt]
 \\centering
+\\footnotesize
 \\makebox[\\textwidth][c]{
-\\begin{tabularx}{565pt}{|c|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|}
+\\begin{tabularx}{571pt}{|c|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|}
 \\toprule
-Confidence \\geq & \\rotatebox{90}{Ball out of play} & \\rotatebox{90}{Throw-in} & \\rotatebox{90}{Foul} & \\rotatebox{90}{Ind. free-kick} & \\rotatebox{90}{Clearance} & \\rotatebox{90}{Shots on tar.} & \\rotatebox{90}{Shots off tar.} & \\rotatebox{90}{Corner} & \\rotatebox{90}{Substitution} & \\rotatebox{90}{Kick-off} & \\rotatebox{90}{Yellow card} & \\rotatebox{90}{Offside} & \\rotatebox{90}{Dir. free-kick} & \\rotatebox{90}{Goal} & \\rotatebox{90}{Penalty} & \\rotatebox{90}{Yel. to Red} &    \\rotatebox{90}{Red card} \\\\
+Confidence $\\geq$ & \\rotatebox{90}{Ball out of play} & \\rotatebox{90}{Throw-in} & \\rotatebox{90}{Foul} & \\rotatebox{90}{Ind. free-kick} & \\rotatebox{90}{Clearance} & \\rotatebox{90}{Shots on tar.} & \\rotatebox{90}{Shots off tar.} & \\rotatebox{90}{Corner} & \\rotatebox{90}{Substitution} & \\rotatebox{90}{Kick-off} & \\rotatebox{90}{Yellow card} & \\rotatebox{90}{Offside} & \\rotatebox{90}{Dir. free-kick} & \\rotatebox{90}{Goal} & \\rotatebox{90}{Penalty} & \\rotatebox{90}{Yel. to Red} & \\rotatebox{90}{Red card} \\\\
 \\midrule
 """
 
@@ -38,22 +40,42 @@ def create_table_statistics(model_name, scores):
     granularity = len(data["Goal"])
 
     data_string = """"""
-    current_threshold = 0
+    current_threshold = 0.0
     threshold_tick = 1 / granularity
     for i in range(0, granularity):
         threshold_row = """"""
         threshold_row += str(current_threshold) + " & "
         for j,c in enumerate(data.keys()):
             if j == len(data.keys()) - 1:
-                threshold_row += str(round(data[c][i], 2)) + " \\\\"
+                threshold_row += format_value(data[c][i]) + " \\\\\n"
             else:
-                threshold_row += str(round(data[c][i], 2)) + " & "
+                threshold_row += format_value(data[c][i]) + " & "
         current_threshold = round(current_threshold + threshold_tick, 2)
         data_string += threshold_row
     table_string = template_table_start + data_string + template_table_end
     return table_string
-        
-        
+
+def format_value(value):
+    if str(value) == "nan":
+        return str("\\textit{NaN}")
+
+    value = str(round(value, 2))
+    if len(value) != 4:
+        value += "0"
+    return value
+
+def create_table_for_metrics(score_dict):
+    template = """
+\\begin{table}[h!bt]
+\\centering
+\\footnotesize
+\\makebox[\\textwidth][c]{
+\\begin{tabularx}{571pt}{|c|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|c@{\\hspace{3pt}}|}
+\\toprule
+Metric """
+    for key in score_dict.keys():
+        template += "\\rotatebox{90}{" + key + "} & "
+    template += "\\\n\\midrule"
 
 
 

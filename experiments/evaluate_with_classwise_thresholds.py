@@ -3,7 +3,7 @@ import sys
 import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import numpy as np
-from alternative_evaluation import create_scores_dict
+from alternative_evaluation import create_scores_dict, evaluate_individual_confidence_thresholds, pretty_print_metrics
 from table_creation_statistics_usecase import create_table_statistics
 from event_list import EVENT_LIST
 
@@ -46,26 +46,26 @@ if __name__ == '__main__':
     predictions_folder = args[2]
 
     scores_dict = create_scores_dict(SoccerNet_path=soccer_net_path, Predictions_path=predictions_folder)
-
-    ## Create a list of lists with values for the different scores
-    list_of_lists_precision = list()
-    list_of_lists_recall = list()
-    list_of_lists_f1score = list()
-    for event_name in EVENT_LIST:
-        list_of_lists_precision.append(scores_dict["precision"][event_name])
-        list_of_lists_recall.append(scores_dict["recall"][event_name])
-        list_of_lists_f1score.append(scores_dict["f1_score"][event_name])
-
-    plot_scores_per_class("Precision", list_of_lists_precision, "precision_per_class", colors)
-    plot_scores_per_class("Recall", list_of_lists_recall, "recall_per_class", colors)
-    plot_scores_per_class("F1 Score", list_of_lists_f1score, "f1score_per_class", colors)
     
-    print("---------------------- PRECISION ----------------------")
-    precision_string = create_table_statistics("precision", scores_dict)
-    print(precision_string)
-    print("---------------------- RECALL ----------------------")
-    recall_string = create_table_statistics("recall", scores_dict)
-    print(recall_string)
-    print("---------------------- F1 SCORE ----------------------")
-    f1_score_string = create_table_statistics("f1_score", scores_dict)
-    print(f1_score_string)
+    confidence_dict = dict()
+
+    for event_name in EVENT_LIST:
+        print(f"{event_name}: ", end="")
+        [print(round(x, 2), end=" ") for x in scores_dict["f1_score"][event_name]]
+        print("")
+        # print(scores_dict["f1_score"][event_name])
+        max_score = max(scores_dict["f1_score"][event_name])
+        result_tuple = np.where(scores_dict["f1_score"][event_name] == max_score)
+        index = result_tuple[0][0]
+        confidence_dict[event_name] = index / 10
+    # print(confidence_dict)
+    confidence_dict["Yellow->red card"] = 0.1
+
+    for k, v in confidence_dict.items():
+        print(F"{k}: {v}")
+
+    score_dict = evaluate_individual_confidence_thresholds(SoccerNet_path=soccer_net_path, Predictions_path=predictions_folder, confidence_thresholds=confidence_dict)
+
+    pretty_print_metrics(score_dict)
+
+    
