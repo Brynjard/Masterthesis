@@ -4,6 +4,7 @@ from turtle import color
 import matplotlib.pyplot as plt
 import numpy as np
 from alternative_evaluation import evaluate_no_delta, evaluate_over_confidence_intervals
+from table_creation_statistics_usecase import create_table_statistics
 
 def create_plot(metric, result_array, baseline_array, filename):
     
@@ -37,9 +38,9 @@ if __name__ == '__main__':
     predictions_folder_baseline = args[3]
 
     # ##list_of_metric_our_model
-    precisions_array_1, recalls_array_1, f1_score_array_1 = evaluate_over_confidence_intervals(SoccerNet_path=soccer_net_path, Predictions_path=predictions_folder)
+    precisions_array_1, recalls_array_1, f1_score_array_1 = evaluate_over_confidence_intervals(SoccerNet_path=soccer_net_path, Predictions_path=predictions_folder, n_intervals=20)
     # # list_of_metric_baseline
-    precisions_array_2, recalls_array_2, f1_score_array_2 = evaluate_over_confidence_intervals(SoccerNet_path=soccer_net_path, Predictions_path=predictions_folder_baseline)
+    precisions_array_2, recalls_array_2, f1_score_array_2 = evaluate_over_confidence_intervals(SoccerNet_path=soccer_net_path, Predictions_path=predictions_folder_baseline, n_intervals=20)
     
     # list_of_lists = [precisions_array_1, recalls_array_1, f1_score_array_1, precisions_array_2, recalls_array_2, f1_score_array_2]
     # for e in list_of_lists:
@@ -56,3 +57,6 @@ if __name__ == '__main__':
     create_plot("Precision", precisions_array_1, precisions_array_2, "precision")
     create_plot("Recall", recalls_array_1, recalls_array_2, "recall")
     create_plot("F1 score", f1_score_array_1, f1_score_array_2, "f1_score")
+
+    ## Create tables
+

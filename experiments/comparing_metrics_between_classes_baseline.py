@@ -56,10 +56,10 @@ if __name__ == '__main__':
         list_of_lists_recall.append(scores_dict["recall"][event_name])
         list_of_lists_f1score.append(scores_dict["f1_score"][event_name])
 
-    plot_scores_per_class("Precision", list_of_lists_precision, "precision_per_class", colors)
-    plot_scores_per_class("Recall", list_of_lists_recall, "recall_per_class", colors)
-    plot_scores_per_class("F1 Score", list_of_lists_f1score, "f1score_per_class", colors)
-    
+    plot_scores_per_class("Precision", list_of_lists_precision, "precision_per_class_baseline", colors)
+    plot_scores_per_class("Recall", list_of_lists_recall, "recall_per_class_baseline", colors)
+    plot_scores_per_class("F1 Score", list_of_lists_f1score, "f1score_per_class_baseline", colors)
+
     print("---------------------- PRECISION ----------------------")
     precision_string = create_table_statistics("precision", scores_dict)
     print(precision_string)

@@ -1,0 +1,18 @@
+EVENT_LIST = ['Ball out of play',
+            'Throw-in',
+            'Foul',
+            'Indirect free-kick',
+            'Clearance',
+            'Shots on target',
+            'Shots off target',
+            'Corner',
+            'Substitution',
+            'Kick-off',
+            'Yellow card',
+            'Offside',
+            'Direct free-kick',
+            'Goal',
+            'Penalty',
+            'Yellow->red card',
+            'Red card'
+            ]
