@@ -19,7 +19,7 @@ template_table_end = """\\bottomrule
 \\label{table:template_label}
 \\end{table}"""
 
-def create_table_statistics(model_name, scores):
+def create_table_statistics(metric_name, scores):
     """
     Creates a table for our statistics-use case. 
     @model_name: The metric you want a table for. precision/recall/f1 according to how @scores is scores. 
@@ -36,7 +36,7 @@ def create_table_statistics(model_name, scores):
             ...
         },
     """
-    data = scores[model_name] #17x10 dict, key = class, value = list of scores for each threshold
+    data = scores[metric_name] #17x10 dict, key = class, value = list of scores for each threshold
     granularity = len(data["Goal"])
 
     data_string = """"""
