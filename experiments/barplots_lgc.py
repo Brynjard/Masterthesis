@@ -68,6 +68,7 @@ def create_barplot(baseline_scores, ex_scores, metric):
     plt.legend()
     plt.tight_layout()
     plt.savefig(filename)
+    plt.clf()
 
 def create_table_for_barplot(baseline_scores, ex_scores, metric):
     template_table_start = """
