@@ -97,11 +97,13 @@ if __name__ == '__main__':
     classes = ["Goal", "Kick-off", "Shots off target", "Shots on target", "Ball out of play", "Throw-in", "Clearance", "Corner", "Foul", "Indirect free-kick", "Direct free-kick", "Penalty", "Yellow card", "Red card","Yellow->red card", "Offside", "Substitution"]
 
     preds_dictionary = fu.create_prediction_dict(pred_src)
+        
+
     labels_dictionary = lu.create_label_dict_relative_urlkey(labels_src, "Labels-v2.json")
 
-    preds = preds_dictionary["england_epl/2016-2017/2017-01-21 - 15-30 Liverpool 2 - 3 Swansea/results_spotting.json"]["predictions"]
-    labels = labels_dictionary["england_epl/2016-2017/2017-01-21 - 15-30 Liverpool 2 - 3 Swansea/Labels-v2.json"]["annotations"]
-    game_url = "england_epl/2016-2017/2017-01-21 - 15-30 Liverpool 2 - 3 Swansea"
+    preds = preds_dictionary["europe_uefa-champions-league/2014-2015/2015-03-10 - 22-45 Real Madrid 3 - 4 Schalke/results_spotting.json"]["predictions"]
+    labels = labels_dictionary["europe_uefa-champions-league/2014-2015/2015-03-10 - 22-45 Real Madrid 3 - 4 Schalke/Labels-v2.json"]["annotations"]
+    game_url = "europe_uefa-champions-league/2014-2015/2015-03-10 - 22-45 Real Madrid 3 - 4 Schalke"
     #create_plot_half(preds, labels, 2, current_class)
     """legend_labels = []
     fig, axes = plt.subplots(5, figsize=(30, 8))
@@ -109,5 +111,10 @@ if __name__ == '__main__':
     create_subplot_half(preds, labels, 2, "Goal", axes[0], legend_labels)
     create_subplot_half(preds, labels, 2, "Kick-off", axes[1], legend_labels)
     create_subplot_half(preds, labels, 2, "Throw-in", axes[2], legend_labels)"""
+    try:
+        print("First prediction is from model: {}".format(preds_dictionary[0]["model"]))
+    except (KeyError) as e:
+        for p in preds:
+            p["model"] = "present"
     create_visualization(classes, 1, preds, labels, "{}_half1".format(filename), game_url)
     create_visualization(classes, 2, preds, labels, "{}_half2".format(filename), game_url)

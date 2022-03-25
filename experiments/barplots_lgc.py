@@ -94,14 +94,14 @@ def create_table_for_barplot(baseline_scores, ex_scores, metric):
     data_string += "Our model & "
     for i, score in enumerate(ex_scores[metrics[metric]]):
         if i == len(ex_scores[metrics[metric]]) - 1:
-            data_string += "{} \\\\".format(round(score, 2))
+            data_string += "{} \\\\\n".format(round(score, 2))
         else:
             data_string += "{} & ".format(round(score, 2))
 
     data_string += "Baseline & "
     for i, score in enumerate(baseline_scores[metrics[metric]]):
         if i == len(baseline_scores[metrics[metric]]) - 1:
-            data_string += "{} \\\\".format(round(score, 2))
+            data_string += "{} \\\\\n".format(round(score, 2))
         else:
             data_string += "{} & ".format(round(score, 2))
 
@@ -330,7 +330,7 @@ def create_classwise_stats_table(model_data, model_name):
             if c < 16:
                 table_string += "{} & ".format(int(model_data[m][confidence_i][c]))
             else:
-                table_string += "{} \\\\".format(int(model_data[m][confidence_i][c]))
+                table_string += "{} \\\\\n".format(int(model_data[m][confidence_i][c]))
             #print("{} for class: {}: {}".format(list(metrics.keys())[m], EVENT_LIST[c], model_data[m][confidence_i][c]))
     table = template_table_start + table_string + template_table_end
     print("============STATS-TABLE FOR: {}============".format(model_name))
