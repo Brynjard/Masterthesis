@@ -297,41 +297,61 @@ def create_classwise_stats_table(model_data, model_name):
         for c in range(17):
             highest_threshold_i = np.argsort(m[:,c])[-1]
             index_overview[c][j] = highest_threshold_i
+
     visibility = ""
     metric = ""
     table_string = """"""
-    for m in range(9, 18):
-        if m in [9, 12, 15]:
-            confidence_i = int(index_overview[c][0])
+    visibility = "All"
+    table_string += "{} & & & & & & & & & & & & & & & & &\\\\\n".format(visibility)
+    for m in [9, 12, 15]:
+        metric = ""
+        if m == 9:
             metric = "TP"
-        elif m in [10, 13, 16]:
-            confidence_i = int(index_overview[c][1])
+        elif m == 12:
             metric = "FP"
         else:
-            confidence_i = int(index_overview[c][2])
             metric = "FN"
-        if m == 9:
-            visibility = "All"
-        elif m == 12:
-            visibility = "Visible"
-        else:
-            visibility = "Off-screen"
-        if m in [9, 12, 15]:
-            table_string += "{} & & & & & & & & & & & & & & & & &\\\\\n".format(visibility)
         table_string += "{} & ".format(metric)
-        for c in range(0, 17):
-            if m in [9, 12, 15]:
-                confidence_i = int(index_overview[c][0])
-            elif m in [10, 13, 16]:
-                confidence_i = int(index_overview[c][1])
-            else:
-                confidence_i = int(index_overview[c][2])
-        
+        for c in range(0, 17):   
+            confidence_i = int(index_overview[c][0])
             if c < 16:
                 table_string += "{} & ".format(int(model_data[m][confidence_i][c]))
             else:
                 table_string += "{} \\\\\n".format(int(model_data[m][confidence_i][c]))
-            #print("{} for class: {}: {}".format(list(metrics.keys())[m], EVENT_LIST[c], model_data[m][confidence_i][c]))
+    visibility = "Visible"
+    table_string += "{} & & & & & & & & & & & & & & & & &\\\\\n".format(visibility)
+    for m in [10, 13, 16]:
+        metric = ""
+        if m == 10:
+            metric = "TP"
+        elif m == 13:
+            metric = "FP"
+        else:
+            metric = "FN"
+        table_string += "{} & ".format(metric)
+        for c in range(0, 17):   
+            confidence_i = int(index_overview[c][1])
+            if c < 16:
+                table_string += "{} & ".format(int(model_data[m][confidence_i][c]))
+            else:
+                table_string += "{} \\\\\n".format(int(model_data[m][confidence_i][c]))
+    visibility = "Off-screen"
+    table_string += "{} & & & & & & & & & & & & & & & & &\\\\\n".format(visibility)
+    for m in [11, 14, 17]:
+        metric = ""
+        if m == 11:
+            metric = "TP"
+        elif m == 14:
+            metric = "FP"
+        else:
+            metric = "FN"
+        table_string += "{} & ".format(metric)
+        for c in range(0, 17):   
+            confidence_i = int(index_overview[c][2])
+            if c < 16:
+                table_string += "{} & ".format(int(model_data[m][confidence_i][c]))
+            else:
+                table_string += "{} \\\\\n".format(int(model_data[m][confidence_i][c]))
     table = template_table_start + table_string + template_table_end
     print("============STATS-TABLE FOR: {}============".format(model_name))
     print(table)
