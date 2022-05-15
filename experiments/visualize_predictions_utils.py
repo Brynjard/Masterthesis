@@ -59,14 +59,14 @@ def create_subplot_half(preds, labels, half, class_name, subplot, legend_labels)
                 subplot.plot(x_points, y_points, "r--")
         
     ticks = []
-    for i in range(-60000, 3000000, 60000):
+    for i in range(-60000, 3000000, 15000):
         ticks.append(int(i))
 
     labels = [fu.convert_position_to_gamestring(int(i)) for i in ticks]
     subplot.set_xlim([0, 3000000])
     subplot.set_ylim([0, 1])
     subplot.set_xticks(ticks)
-    subplot.set_xticklabels(labels)
+    subplot.set_xticklabels(labels, rotation=90)
     plt.xlabel("Time(m)")
     plt.ylabel("Confidence")
     subplot.set(xlabel="Time(m)", ylabel="Confidence")
@@ -97,6 +97,8 @@ if __name__ == '__main__':
     classes = ["Goal", "Kick-off", "Shots off target", "Shots on target", "Ball out of play", "Throw-in", "Clearance", "Corner", "Foul", "Indirect free-kick", "Direct free-kick", "Penalty", "Yellow card", "Red card","Yellow->red card", "Offside", "Substitution"]
 
     preds_dictionary = fu.create_prediction_dict(pred_src)
+        
+
     labels_dictionary = lu.create_label_dict_relative_urlkey(labels_src, "Labels-v2.json")
 
     preds = preds_dictionary["england_epl/2016-2017/2017-01-21 - 15-30 Liverpool 2 - 3 Swansea/results_spotting.json"]["predictions"]
@@ -109,5 +111,14 @@ if __name__ == '__main__':
     create_subplot_half(preds, labels, 2, "Goal", axes[0], legend_labels)
     create_subplot_half(preds, labels, 2, "Kick-off", axes[1], legend_labels)
     create_subplot_half(preds, labels, 2, "Throw-in", axes[2], legend_labels)"""
+    
+    """
+    try:
+        print("First prediction is from model: {}".format(preds_dictionary[0]["model"]))
+    except (KeyError) as e:
+        for p in preds:
+            p["model"] = "present"
+    """
+    
     create_visualization(classes, 1, preds, labels, "{}_half1".format(filename), game_url)
     create_visualization(classes, 2, preds, labels, "{}_half2".format(filename), game_url)
